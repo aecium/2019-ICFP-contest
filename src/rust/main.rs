@@ -20,7 +20,15 @@ impl Map {
             .trim_matches('(')
             .trim_matches(')')
             .split("),(");
-        let bot_position = split_map.next();
+        let bot_position: Vec<&str> = split_map.next()
+            .expect("Ran out of parts.")
+            .trim_matches('(')
+            .trim_matches(')')
+            .split(",").collect();
+        let bot_position = Point {
+            x:bot_position[0].parse::<usize>().unwrap(),
+            y:bot_position[1].parse::<usize>().unwrap(),
+        };
         let obstacles = split_map.next().expect("Need more tacos.")
             .split(";");
         let boosters = split_map.next();
@@ -69,6 +77,40 @@ impl Map {
             }
         }
 
+        let mut done: Vec<Vec<bool>> = Vec::new();
+        for _y in 0..max_y + 1 {
+            let mut row = Vec::new();
+            for _x in 0..max_x + 1 {
+                row.push(false);
+            }
+            done.push(row);
+        }
+        let mut todo: Vec<Point> = Vec::new();
+        todo.push(bot_position);
+        while todo.len() > 0 {
+            let point = todo.pop().unwrap();
+            let x = point.x;
+            let y = point.y;
+            let mt = MapSquare::Empty { power_up: None };
+            let oob = MapSquare::OOB;
+            map[y][x] = MapSquare::Empty { power_up: None };
+            done[y][x] = true;
+            if x > 0 && !done[y][x-1] && (map[y][x-1]==mt || map[y][x-1]==oob) {
+                todo.push(Point { x: x-1, y: y });
+            }
+            if x < max_x && !done[y][x+1] && (map[y][x+1]==mt || map[y][x+1]==oob) {
+                todo.push(Point { x: x+1, y: y });
+            }
+            if y > 0 && !done[y-1][x] && (map[y-1][x]==mt || map[y-1][x]==oob) {
+                todo.push(Point { x: x, y: y-1 });
+            }
+            if y < max_y && !done[y+1][x] && (map[y+1][x]==mt || map[y+1][x]==oob) {
+                todo.push(Point { x: x, y: y+1 });
+            }
+            //println!("{}, {}, {:?}", x, y, todo);
+            //println!("{:?}", done);
+        }
+
         Map {
             contour: points,
             squares: map,
@@ -79,6 +121,8 @@ impl Map {
         let mut last = Point { x: 0, y: 0 };
         let mut first = true;
         let mut ps = points.to_vec();
+        let mt = MapSquare::Empty { power_up: None };
+        let oob = MapSquare::OOB;
         ps.push(points[0].clone());
         for point in ps {
             if first {
@@ -92,7 +136,7 @@ impl Map {
                 let mut max_x = cmp::max(last.x, point.x);
                 let mut min_y = cmp::min(last.y, point.y);
                 let mut max_y = cmp::max(last.y, point.y);
-                if up  || down {
+                if up || down {
                     max_y -= 1;
                     if up {
                         min_x -= 1;
@@ -109,6 +153,29 @@ impl Map {
                 for x in min_x..=max_x {
                     for y in min_y..=max_y {
                         map[y][x] = square.clone();
+                        if square==mt {
+                            if up && x<max_x && map[y][x+1]==oob {
+                                map[y][x+1] = MapSquare::OOB2;
+                                if y>0 && map[y-1][x-1]!=mt {
+                                    map[y-1][x-1] = MapSquare::OOB2;
+                                }
+                                if y < max_y {
+                                    map[y+1][x-1] = MapSquare::OOB2;
+                                }
+                            }
+                            if down && x>0 && map[y][x-1]==oob {
+                                map[y][x-1] = MapSquare::OOB2;
+                                if y>0 {
+                                    map[y-1][x-1] = MapSquare::OOB2;
+                                }
+                            }
+                            if right && y<max_y && map[y+1][x]==oob {
+                                map[y+1][x] = MapSquare::OOB2;
+                            }
+                            if left && y>0 && map[y-1][x]==oob {
+                                map[y-1][x] = MapSquare::OOB2;
+                            }
+                        }
                     }
                 }
             }
@@ -166,12 +233,13 @@ impl fmt::Debug for Map {
     }
 }
 
-#[derive(Clone)]
+#[derive(Clone, PartialEq)]
 enum MapSquare {
     Empty { power_up: Option<PowerUp> },
     Wrapped { power_up: Option<PowerUp> },
     Blocked,
     OOB,
+    OOB2,
 }
 impl MapSquare {
     fn to_char(&self) -> char {
@@ -180,6 +248,7 @@ impl MapSquare {
             //MapSquare::Wrapped => 'O',
             MapSquare::Blocked => '~',
             MapSquare::OOB => '.',
+            MapSquare::OOB2 => ',',
             _ => '#',
         }
     }
@@ -216,7 +285,7 @@ impl Bot {
 pub trait ByCode {
     fn by_code(code: char) -> Self;
 }
-#[derive(Clone)]
+#[derive(Clone, PartialEq)]
 enum PowerUp {
     Extension, //{code: 'B'},
     Boost,     // {code: 'F'},
