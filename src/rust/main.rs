@@ -3,10 +3,15 @@ use std::env;
 use std::fmt;
 use std::fs;
 
-use rand::{
-    distributions::{Distribution, Standard},
-    Rng,
-};
+mod app_core;
+use app_core::{Direction, Point};
+
+mod powerups;
+use powerups::PowerUp;
+
+mod bot;
+use bot::*;
+
 struct Map {
     contour: Vec<Point>,
     squares: Vec<Vec<MapSquare>>,
@@ -21,8 +26,7 @@ impl Map {
             .trim_matches(')')
             .split("),(");
         let bot_position = split_map.next();
-        let obstacles = split_map.next().expect("Need more tacos.")
-            .split(";");
+        let obstacles = split_map.next().expect("Need more tacos.").split(";");
         let boosters = split_map.next();
 
         let mut points: Vec<Point> = Vec::new();
@@ -55,9 +59,7 @@ impl Map {
 
         for obstacle in obstacles {
             if obstacle.len() > 0 {
-                let obstacle = obstacle.trim_matches('(')
-                    .trim_matches(')')
-                    .split("),("); 
+                let obstacle = obstacle.trim_matches('(').trim_matches(')').split("),(");
                 let mut points: Vec<Point> = Vec::new();
                 for point in obstacle {
                     let p: Vec<&str> = point.split(",").collect();
@@ -92,7 +94,7 @@ impl Map {
                 let mut max_x = cmp::max(last.x, point.x);
                 let mut min_y = cmp::min(last.y, point.y);
                 let mut max_y = cmp::max(last.y, point.y);
-                if up  || down {
+                if up || down {
                     max_y -= 1;
                     if up {
                         min_x -= 1;
@@ -189,101 +191,7 @@ impl fmt::Debug for MapSquare {
         write!(f, "{}", self.to_char())
     }
 }
-
-enum Direction {
-    North,
-    East,
-    South,
-    West,
-}
-
-struct Bot {
-    powerups: Vec<PowerUp>,
-    position: Point,
-}
-
-impl Bot {
-    fn move_self(&mut self, direction : &Direction){
-        let position = &self.position;
-        match direction {
-            Direction::North => self.position = Point{ x: position.x, y: position.y + 1},
-            Direction::East => self.position = Point{ x: position.x + 1, y: position.y},
-            Direction::South => self.position = Point{ x: position.x, y: position.y - 1},
-            Direction::West => self.position = Point{ x: position.x - 1, y: position.y},
-        }
-    }
-}
-pub trait ByCode {
-    fn by_code(code: char) -> Self;
-}
-#[derive(Clone)]
-enum PowerUp {
-    Extension, //{code: 'B'},
-    Boost,     // {code: 'F'},
-    Drill,     // {code: 'L'},
-}
-
-#[derive(Clone)]
-struct Point {
-    x: usize,
-    y: usize,
-}
-impl fmt::Debug for Point {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "Point {{ x: {}, y: {} }}", self.x, self.y)
-    }
-}
-
-impl ByCode for PowerUp {
-    fn by_code(code: char) -> Self {
-        match code {
-            'B' => PowerUp::Extension,
-            'F' => PowerUp::Boost,
-            'L' => PowerUp::Drill,
-            _ => panic!("Unknown powerup code"),
-        }
-    }
-}
-pub trait ToChar {
-    fn to_char(&self) -> char;
-}
-enum Action {
-    Up,
-    Right,
-    Down,
-    Left,
-    Nop,
-    RotClock,
-    RotAnticlock,
-    //Attach { dx:u8, dy:u8},
-    Boost,
-    Drill,
-    Reset,
-    //Shift {dest: &Point},
-}
-
-impl ToChar for Action {
-    fn to_char(&self) -> char {
-        match self {
-            Up => 'W',
-            Right => 'D',
-            Down => 'S',
-            Left => 'A',
-            _ => panic!("unknown output char")
-        }
-    }
-}
-
-impl Distribution<Action> for Standard {
-    fn sample<R: Rng+ ?Sized>(&self, rng : &mut R) -> Action {
-        match rng.gen_range(0,4) {
-            0 => Action::Up,
-            1 => Action::Right,
-            2 => Action::Down,
-            _ => Action::Left,
-        }
-    }
-}
+//-------------------------//
 
 fn main() {
     let args: Vec<String> = env::args().collect();
@@ -299,37 +207,38 @@ fn main() {
     println!("🌮 Free Tacos! 🌮");
 }
 
-fn find_path(bot: &mut Bot, map: &mut Map) -> String{
+fn find_path(bot: &mut Bot, map: &mut Map) -> String {
     let mut solution: Vec<char> = Vec::new();
     while !map.is_complete() {
         let neighbors = map.find_neighbors(&bot.position);
         //let (north, east, south, west, my_square) = map.find_neighbors(&bot.position);
-        let mut action : Action = rand::random();
+        let mut action: Action = rand::random();
 
         while !action_is_valid(&action, &neighbors) {
             action = rand::random();
-        };
+        }
         solution.push(action.to_char());
         match action {
             Action::Up => bot.move_self(&Direction::North),
             Action::Right => bot.move_self(&Direction::East),
             Action::Down => bot.move_self(&Direction::South),
             Action::Left => bot.move_self(&Direction::North),
-            _ => ()
+            _ => (),
         }
     }
     return solution.into_iter().collect();
-
 }
 
-fn action_is_valid(action: &Action, neighbors : &(
+fn action_is_valid(
+    action: &Action,
+    neighbors: &(
         Option<&MapSquare>,
         Option<&MapSquare>,
         Option<&MapSquare>,
         Option<&MapSquare>,
         &MapSquare,
-    )) -> bool
-{
+    ),
+) -> bool {
     let (north, east, south, west, _) = neighbors;
     match action {
         Up => (north.is_some() && is_valid_space(north.unwrap())),
@@ -339,10 +248,10 @@ fn action_is_valid(action: &Action, neighbors : &(
     }
 }
 
-fn is_valid_space (space : &MapSquare) -> bool {
+fn is_valid_space(space: &MapSquare) -> bool {
     match space {
-        MapSquare::Empty {power_up} => true,
-        MapSquare::Wrapped {power_up} => true,
+        MapSquare::Empty { power_up } => true,
+        MapSquare::Wrapped { power_up } => true,
         _ => false,
     }
 }
