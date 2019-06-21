@@ -3,25 +3,29 @@ use std::fs;
 use std::fmt;
 
 struct Map {
-    squares : Vec<Vec<MapSqare>>
+    squares : Vec<Vec<MapSquare>>
 }
 impl Map {
     fn from_map_string(map_string: &str) -> Self {
 
-        let split_map = map_string.split('#');
-        let bounding_box = split_map.next();
+        let mut split_map = map_string.split('#');
+        let bounding_box = split_map.next().expect("Fixme");
         let bot_position = split_map.next();
         let obstacles = split_map.next();
         let boosters = split_map.next();
 
-        let map_vec = Vec::new();
         for point_str in bounding_box.split(',')
         {
 
+        };
+
+        Map {
+            squares: Vec::new()
         }
+    }
 }
 
-enum MapSqare {
+enum MapSquare {
     Empty { powerUp : Option<PowerUp>},
     Wrapped { powerUp : Option<PowerUp>},
     Blocked { powerUp : Option<PowerUp>},
