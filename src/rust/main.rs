@@ -76,8 +76,8 @@ impl Map {
         let squares = &self.squares;
 
         //let mySquare = &self.squares.get(index: I)[pos.x]
-        let my_square = match (squares.get(pos.y)) {
-            Some(x) => match (x.get(pos.y)){
+        let my_square = match squares.get(pos.y) {
+            Some(x) => match x.get(pos.y){
                 Some(square) => square,
                 _ => panic!("invalid")
             }
@@ -90,6 +90,10 @@ impl Map {
         let west = squares.get(pos.y).and_then(|row| row.get(pos.x - 1));
         
         return (north,east,south,west,my_square);
+    }
+
+    fn is_complete(&self) -> bool {
+        return false;
     }
 }
 impl fmt::Debug for Map {
@@ -140,8 +144,8 @@ enum Direction {
 }
 
 struct Bot {
-    powerups : Vec<PowerUp>
-
+    powerups : Vec<PowerUp>,
+    position : Point
 }
 
 pub trait ByCode {
@@ -175,7 +179,23 @@ impl ByCode for PowerUp{
         }
     }
 }
-
+pub trait ToChar {
+    fn to_char(&self) -> char;
+}
+enum Action {
+    Up,
+    Right,
+    Down,
+    Left,
+    Nop,
+    RotClock,
+    RotAnticlock,
+    //Attach { dx:u8, dy:u8},
+    Boost,
+    Drill,
+    Reset,
+    //Shift {dest: &Point},
+}
 
 fn main() {
     let args: Vec<String> = env::args().collect();
@@ -190,4 +210,13 @@ fn main() {
     println!("map: {:?}", map);
 
     println!("🌮 Free Tacos! 🌮");
+}
+
+fn find_path(bot : &mut Bot,map : &mut Map) {
+    let path : Vec<char> = Vec::new();
+    while(!map.is_complete())
+    {
+        let (north, east, south, west, my_square) = map.find_neighbors(&bot.position);
+        
+    }
 }
