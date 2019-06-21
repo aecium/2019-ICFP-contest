@@ -76,21 +76,38 @@ impl Map {
         let mut ps = points.to_vec();
         ps.push(points[0].clone());
         for point in ps {
-            map[point.y][point.x] = MapSquare::Empty { power_up: None };
             if first {
                 first = false;
             } else {
-                for x in cmp::min(last.x, point.x)..=cmp::max(last.x, point.x) {
-                    for y in cmp::min(last.y, point.y)..=cmp::max(last.y, point.y) {
-                        println!("{}, {}", x, y);
+                let right = last.x < point.x;
+                let left = last.x > point.x;
+                let up = last.y < point.y;
+                let down = last.y > point.y;
+                let mut min_x = cmp::min(last.x, point.x);
+                let mut max_x = cmp::max(last.x, point.x);
+                let mut min_y = cmp::min(last.y, point.y);
+                let mut max_y = cmp::max(last.y, point.y);
+                if up  || down {
+                    max_y -= 1;
+                    if up {
+                        min_x -= 1;
+                        max_x -= 1;
+                    }
+                }
+                if left || right {
+                    max_x -= 1;
+                    if left {
+                        min_y -= 1;
+                        max_y -= 1;
+                    }
+                }
+                for x in min_x..=max_x {
+                    for y in min_y..=max_y {
                         map[y][x] = square.clone();
                     }
                 }
             }
-            last = Point {
-                x: point.x,
-                y: point.y,
-            };
+            last = point.clone();
         }
     }
 
@@ -140,7 +157,6 @@ impl fmt::Debug for Map {
             let s: String = cols.into_iter().collect();
             map.push(s);
         }
-        write!(f, "contour: {:?}", self.contour);
         write!(f, "map:\n{}", map.join("\n"))
     }
 }
@@ -157,9 +173,9 @@ impl MapSquare {
         match self {
             //MapSquare::Empty{  } => '.',
             //MapSquare::Wrapped => 'O',
-            MapSquare::Blocked => 'X',
-            MapSquare::OOB => '#',
-            _ => '.',
+            MapSquare::Blocked => '~',
+            MapSquare::OOB => '.',
+            _ => '#',
         }
     }
 }
