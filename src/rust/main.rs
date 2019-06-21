@@ -51,6 +51,26 @@ impl Map {
             squares: map,
         }
     }
+    fn find_neighbors(&self, pos : &Point) -> (Option<&MapSquare>,Option<&MapSquare>,Option<&MapSquare>,Option<&MapSquare>,&MapSquare) // (north, east, south, west, center)
+    {
+        let squares = &self.squares;
+
+        //let mySquare = &self.squares.get(index: I)[pos.x]
+        let my_square = match (squares.get(pos.y)) {
+            Some(x) => match (x.get(pos.y)){
+                Some(square) => square,
+                _ => panic!("invalid")
+            }
+            _ => panic!("invalid")
+        };
+
+        let north = squares.get(pos.y + 1).and_then(|row| row.get(pos.x));
+        let east = squares.get(pos.y).and_then(|row| row.get(pos.x + 1));
+        let south = squares.get(pos.y - 1).and_then(|row| row.get(pos.x));
+        let west = squares.get(pos.y).and_then(|row| row.get(pos.x - 1));
+        
+        return (north,east,south,west,my_square);
+    }
 }
 impl fmt::Debug for Map {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
@@ -92,16 +112,27 @@ impl fmt::Debug for MapSquare {
     }
 }
 
+enum Direction {
+    North,
+    East,
+    South,
+    West,
+}
+
 struct Bot {
     powerups : Vec<PowerUp>
 
 }
 
+pub trait ByCode {
+    fn by_code(code: char) -> Self;
+}
 enum PowerUp{
     Extension, //{code: 'B'},
     Boost,// {code: 'F'},
     Drill,// {code: 'L'},
 }
+
 
 struct Point {
     x: usize,
@@ -111,11 +142,6 @@ impl fmt::Debug for Point {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "Point {{ x: {}, y: {} }}", self.x, self.y)
     }
-}
-
-
-pub trait ByCode {
-    fn by_code(code: char) -> Self;
 }
 
 impl ByCode for PowerUp{
