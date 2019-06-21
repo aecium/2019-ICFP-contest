@@ -3,25 +3,44 @@ use std::fs;
 use std::fmt;
 
 struct Map {
+    contour: Vec<Point>,
     squares : Vec<Vec<MapSquare>>
 }
 impl Map {
     fn from_map_string(map_string: &str) -> Self {
 
         let mut split_map = map_string.split('#');
-        let bounding_box = split_map.next().expect("Fixme");
+        let contour = split_map.next().expect("Ran out of parts.")
+            .trim_matches('(').trim_matches(')')
+            .split("),(");
         let bot_position = split_map.next();
         let obstacles = split_map.next();
         let boosters = split_map.next();
 
-        for point_str in bounding_box.split(',')
-        {
+        let mut points:Vec<Point> = Vec::new();
 
-        };
+        let max_x = 0;
+        let max_y = 0;
+        for point in contour {
+            let p:Vec<&str> = point.split(",").collect();
+            let x = p[0].parse::<usize>().unwrap();
+            let y = p[1].parse::<usize>().unwrap();
+
+            points.push(Point {
+                x: x,
+                y: y,
+            })
+        }
 
         Map {
+            contour: points,
             squares: Vec::new()
         }
+    }
+}
+impl fmt::Debug for Map {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "contour: {:?}", self.contour)
     }
 }
 
@@ -42,7 +61,18 @@ enum PowerUp{
     Boost,// {code: 'F'},
     Drill,// {code: 'L'},
 }
- 
+
+struct Point {
+    x: usize,
+    y: usize,
+}
+impl fmt::Debug for Point {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "Point {{ x: {}, y: {} }}", self.x, self.y)
+    }
+}
+
+
 pub trait ByCode {
     fn by_code(code: char) -> Self;
 }
@@ -58,15 +88,6 @@ impl ByCode for PowerUp{
     }
 }
 
-struct Point {
-    x: usize,
-    y: usize,
-}
-impl fmt::Debug for Point {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "Point {{ x: {}, y: {} }}", self.x, self.y)
-    }
-}
 
 fn main() {
     let args: Vec<String> = env::args().collect();
@@ -76,24 +97,9 @@ fn main() {
 
     println!("{}: {}", filename, contents);
 
-    let parts:Vec<&str> = contents.split("#").collect();
-    let contour:Vec<&str> = parts[0]
-        .trim_matches('(')
-        .trim_matches(')')
-        .split("),(")
-        .collect();
-    let mut points:Vec<Point> = Vec::new();
-    for point in &contour {
-        let p:Vec<&str> = point.split(",").collect();
-        points.push(Point {
-            x: p[0].parse::<usize>().unwrap(),
-            y: p[1].parse::<usize>().unwrap(),
-        })
-    }
+    let map = Map::from_map_string(&contents);
 
-    println!("contour: {:?}", contour);
-    println!("points: {:?}", points);
-
+    println!("map: {:?}", map);
 
     println!("🌮 Free Tacos! 🌮");
 }
