@@ -28,5 +28,5 @@ impl ByCode for PowerUp{
 }
 
 fn main() {
-    println!("Hello, world!");
+    println!("Free Tacos!");
 }
