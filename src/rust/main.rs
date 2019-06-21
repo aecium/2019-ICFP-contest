@@ -113,7 +113,7 @@ impl fmt::Debug for Map {
         for y in 0..self.squares.len() {
             let row = &self.squares[y];
             let mut cols: Vec<char> = Vec::new();
-            for x in 0..row.len() {
+            for x in (0..row.len()).rev() {
                 cols.push(row[x].to_char());
             }
             let s: String = cols.into_iter().collect();
