@@ -1,6 +1,7 @@
 use std::env;
 use std::fs;
 use std::fmt;
+use std::cmp;
 
 struct Map {
     contour: Vec<Point>,
@@ -38,12 +39,31 @@ impl Map {
         }
 
         let mut map: Vec<Vec<MapSquare>> = Vec::new();
-        for _y in 0..max_y {
+        for _y in 0..max_y+1 {
             let mut row = Vec::new();
-            for _x in 0..max_x {
+            for _x in 0..max_x+1 {
                 row.push(MapSquare::OOB);
             }
             map.push(row);
+        }
+
+        let mut last = Point{ x: 0, y: 0 };
+        let mut first = true;
+        let mut ps = points.to_vec();
+        ps.push(points[0].clone());
+        for point in ps {
+            map[point.y][point.x] = MapSquare::Empty{ power_up: None };
+            if first {
+                first = false;
+            } else {
+                for x in cmp::min(last.x, point.x)..=cmp::max(last.x, point.x) {
+                    for y in cmp::min(last.y, point.y)..=cmp::max(last.y, point.y) {
+                        println!("{}, {}", x, y);
+                        map[y][x] = MapSquare::Empty{ power_up: None };
+                    }
+                }
+            }
+            last = Point{ x: point.x, y: point.y };
         }
 
         Map {
@@ -90,18 +110,18 @@ impl fmt::Debug for Map {
 }
 
 enum MapSquare {
-    Empty { powerUp : Option<PowerUp>},
-    Wrapped { powerUp : Option<PowerUp>},
-    Blocked { powerUp : Option<PowerUp>},
+    Empty { power_up : Option<PowerUp>},
+    Wrapped { power_up : Option<PowerUp>},
+    Blocked { power_up : Option<PowerUp>},
     OOB,
 }
 impl MapSquare {
     fn to_char(&self) -> char {
         match self {
-            //MapSquare::Empty => '.',
+            //MapSquare::Empty{  } => '.',
             //MapSquare::Wrapped => 'O',
             //MapSquare::Blocked => 'X',
-            MapSquare::OOB => '~',
+            MapSquare::OOB => '#',
             _ => '.',
         }
     }
@@ -134,6 +154,7 @@ enum PowerUp{
 }
 
 
+#[derive(Clone)]
 struct Point {
     x: usize,
     y: usize,
