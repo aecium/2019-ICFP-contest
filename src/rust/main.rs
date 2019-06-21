@@ -17,7 +17,8 @@ impl Map {
             .trim_matches(')')
             .split("),(");
         let bot_position = split_map.next();
-        let obstacles = split_map.next();
+        let obstacles = split_map.next().expect("Need more tacos.")
+            .split(";");
         let boosters = split_map.next();
 
         let mut points: Vec<Point> = Vec::new();
@@ -46,6 +47,30 @@ impl Map {
             map.push(row);
         }
 
+        Map::contour_map(&mut map, &mut points, MapSquare::Empty { power_up: None });
+
+        for obsticle in obstacles {
+            let obsticle = obsticle.trim_matches('(')
+                .trim_matches(')')
+                .split("),("); 
+            let mut points: Vec<Point> = Vec::new();
+            for point in obsticle {
+                let p: Vec<&str> = point.split(",").collect();
+                let x = p[0].parse::<usize>().unwrap();
+                let y = p[1].parse::<usize>().unwrap();
+                points.push(Point { x: x, y: y })
+            }
+
+            Map::contour_map(&mut map, &mut points, MapSquare::Blocked);
+        }
+
+        Map {
+            contour: points,
+            squares: map,
+        }
+    }
+
+    fn contour_map(map: &mut Vec<Vec<MapSquare>>, points: &mut Vec<Point>, square: MapSquare) {
         let mut last = Point { x: 0, y: 0 };
         let mut first = true;
         let mut ps = points.to_vec();
@@ -58,7 +83,7 @@ impl Map {
                 for x in cmp::min(last.x, point.x)..=cmp::max(last.x, point.x) {
                     for y in cmp::min(last.y, point.y)..=cmp::max(last.y, point.y) {
                         println!("{}, {}", x, y);
-                        map[y][x] = MapSquare::Empty { power_up: None };
+                        map[y][x] = square.clone();
                     }
                 }
             }
@@ -67,12 +92,8 @@ impl Map {
                 y: point.y,
             };
         }
-
-        Map {
-            contour: points,
-            squares: map,
-        }
     }
+
     fn find_neighbors(
         &self,
         pos: &Point,
@@ -124,10 +145,11 @@ impl fmt::Debug for Map {
     }
 }
 
+#[derive(Clone)]
 enum MapSquare {
     Empty { power_up: Option<PowerUp> },
     Wrapped { power_up: Option<PowerUp> },
-    Blocked { power_up: Option<PowerUp> },
+    Blocked,
     OOB,
 }
 impl MapSquare {
@@ -135,7 +157,7 @@ impl MapSquare {
         match self {
             //MapSquare::Empty{  } => '.',
             //MapSquare::Wrapped => 'O',
-            //MapSquare::Blocked => 'X',
+            MapSquare::Blocked => 'X',
             MapSquare::OOB => '#',
             _ => '.',
         }
@@ -162,6 +184,7 @@ struct Bot {
 pub trait ByCode {
     fn by_code(code: char) -> Self;
 }
+#[derive(Clone)]
 enum PowerUp {
     Extension, //{code: 'B'},
     Boost,     // {code: 'F'},
