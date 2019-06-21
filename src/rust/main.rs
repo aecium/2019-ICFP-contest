@@ -1,3 +1,6 @@
+use std::env;
+use std::fs;
+
 struct Map {
 
 }
@@ -28,5 +31,11 @@ impl ByCode for PowerUp{
 }
 
 fn main() {
-    println!("Free Tacos!");
+    let args: Vec<String> = env::args().collect();
+    let filename = &args[1];
+    let contents = fs::read_to_string(filename)
+        .expect("Failed to read.");
+
+    println!("{}: {}", filename, contents);
+    println!("🌮 Free Tacos! 🌮");
 }
