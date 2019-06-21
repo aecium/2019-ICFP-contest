@@ -38,9 +38,9 @@ impl Map {
         }
 
         let mut map: Vec<Vec<MapSquare>> = Vec::new();
-        for _y in 0..max_x {
+        for _y in 0..max_y {
             let mut row = Vec::new();
-            for _x in 0..max_y {
+            for _x in 0..max_x {
                 row.push(MapSquare::OOB);
             }
             map.push(row);
@@ -54,7 +54,18 @@ impl Map {
 }
 impl fmt::Debug for Map {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "contour: {:?}", self.contour)
+        let mut map: Vec<String> = Vec::new();
+        for y in 0..self.squares.len() {
+            let row = &self.squares[y];
+            let mut cols:Vec<char> = Vec::new();
+            for x in 0..row.len(){
+                cols.push(row[x].to_char());
+            }
+            let s: String = cols.into_iter().collect();
+            map.push(s);
+        }
+        write!(f, "contour: {:?}", self.contour);
+        write!(f, "map:\n{}", map.join("\n"))
     }
 }
 
