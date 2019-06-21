@@ -53,19 +53,20 @@ impl Map {
 
         Map::contour_map(&mut map, &mut points, MapSquare::Empty { power_up: None });
 
-        for obsticle in obstacles {
-            let obsticle = obsticle.trim_matches('(')
-                .trim_matches(')')
-                .split("),("); 
-            let mut points: Vec<Point> = Vec::new();
-            for point in obsticle {
-                let p: Vec<&str> = point.split(",").collect();
-                let x = p[0].parse::<usize>().unwrap();
-                let y = p[1].parse::<usize>().unwrap();
-                points.push(Point { x: x, y: y })
+        for obstacle in obstacles {
+            if obstacle.len() > 0 {
+                let obstacle = obstacle.trim_matches('(')
+                    .trim_matches(')')
+                    .split("),("); 
+                let mut points: Vec<Point> = Vec::new();
+                for point in obstacle {
+                    let p: Vec<&str> = point.split(",").collect();
+                    let x = p[0].parse::<usize>().unwrap();
+                    let y = p[1].parse::<usize>().unwrap();
+                    points.push(Point { x: x, y: y })
+                }
+                Map::contour_map(&mut map, &mut points, MapSquare::Blocked);
             }
-
-            Map::contour_map(&mut map, &mut points, MapSquare::Blocked);
         }
 
         Map {
