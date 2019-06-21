@@ -114,7 +114,7 @@ impl Map {
 impl fmt::Debug for Map {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         let mut map: Vec<String> = Vec::new();
-        for y in 0..self.squares.len() {
+        for y in (0..self.squares.len()).rev() {
             let row = &self.squares[y];
             let mut cols: Vec<char> = Vec::new();
             for x in 0..row.len() {
