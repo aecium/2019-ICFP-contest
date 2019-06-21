@@ -5,3 +5,7 @@ authors = ["Nathan Frasier <nanoshot.nf@gmail.com>"]
 edition = "2018"
 
 [dependencies]
+
+[[bin]]
+name = "app"
+path = "src/rust/main.rs"
