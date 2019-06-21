@@ -1,4 +1,5 @@
 /target
 **/*.rs.bk
 **/.DS_Store
-/src/ssh/shipped
+/src/ssh/shipped/*.sol
+/src/ssh/shipped/*.zip
