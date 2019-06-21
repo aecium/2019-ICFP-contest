@@ -6,6 +6,8 @@ edition = "2018"
 
 [dependencies]
 pathfinding = "1"
+rand = "0.5"
+
 [[bin]]
 name = "app"
 path = "src/rust/main.rs"
