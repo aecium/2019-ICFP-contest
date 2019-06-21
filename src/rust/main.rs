@@ -19,22 +19,36 @@ impl Map {
 
         let mut points:Vec<Point> = Vec::new();
 
-        let max_x = 0;
-        let max_y = 0;
+        let mut max_x = 0;
+        let mut max_y = 0;
         for point in contour {
             let p:Vec<&str> = point.split(",").collect();
             let x = p[0].parse::<usize>().unwrap();
             let y = p[1].parse::<usize>().unwrap();
-
+            if x > max_x {
+                max_x = x;
+            }
+            if y > max_y {
+                max_y = y;
+            }
             points.push(Point {
                 x: x,
                 y: y,
             })
         }
 
+        let mut map: Vec<Vec<MapSquare>> = Vec::new();
+        for _y in 0..max_x {
+            let mut row = Vec::new();
+            for _x in 0..max_y {
+                row.push(MapSquare::OOB);
+            }
+            map.push(row);
+        }
+
         Map {
             contour: points,
-            squares: Vec::new()
+            squares: map,
         }
     }
 }
@@ -49,6 +63,22 @@ enum MapSquare {
     Wrapped { powerUp : Option<PowerUp>},
     Blocked { powerUp : Option<PowerUp>},
     OOB,
+}
+impl MapSquare {
+    fn to_char(&self) -> char {
+        match self {
+            //MapSquare::Empty => '.',
+            //MapSquare::Wrapped => 'O',
+            //MapSquare::Blocked => 'X',
+            MapSquare::OOB => '~',
+            _ => '.',
+        }
+    }
+}
+impl fmt::Debug for MapSquare {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "{}", self.to_char())
+    }
 }
 
 struct Bot {
