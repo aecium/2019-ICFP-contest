@@ -1,13 +1,22 @@
 use std::cmp;
 use std::fmt;
 
-use crate::app_core::Point;
+use crate::app_core::{Direction, Point};
+use crate::bot::*;
 use crate::powerups::PowerUp;
 
+pub type Neighbors<'a> = (
+    Option<&'a MapSquare>,
+    Option<&'a MapSquare>,
+    Option<&'a MapSquare>,
+    Option<&'a MapSquare>,
+    &'a MapSquare,
+);
 pub struct Map {
     remaining: usize,
     contour: Vec<Point>,
     squares: Vec<Vec<MapSquare>>,
+    bot: Bot,
 }
 impl Map {
     pub fn from_map_string(map_string: &str) -> Self {
@@ -76,12 +85,16 @@ impl Map {
             }
         }
 
+<<<<<<< HEAD
         Map::fill_map(
             &mut map,
             bot_position,
             MapSquare::Empty { power_up: None },
             MapSquare::Empty { power_up: None },
         );
+=======
+        Map::fill_map(&mut map, bot_position.clone(), MapSquare::Empty { power_up: None }, MapSquare::Empty { power_up: None });
+>>>>>>> a571f46e2c9919d66a2945ad520315253aeb89e5
         for point in obstacle_starts {
             Map::fill_map(&mut map, point, MapSquare::Blocked, MapSquare::Blocked);
         }
@@ -90,6 +103,7 @@ impl Map {
             contour: points,
             squares: map,
             remaining: 1,
+            bot: Bot::new(bot_position.clone(), Direction::East),
         }
     }
 
@@ -218,17 +232,7 @@ impl Map {
         }
     }
 
-    pub fn find_neighbors(
-        &self,
-        pos: &Point,
-    ) -> (
-        Option<&MapSquare>,
-        Option<&MapSquare>,
-        Option<&MapSquare>,
-        Option<&MapSquare>,
-        &MapSquare,
-    ) // (north, east, south, west, center)
-    {
+    pub fn find_neighbors(&self, pos: &Point) -> Neighbors {
         let squares = &self.squares;
 
         //let mySquare = &self.squares.get(index: I)[pos.x]
@@ -264,6 +268,21 @@ impl Map {
         }
         println!("remaining: {}", remaining);
         return remaining == 0;
+    }
+
+    pub fn is_valid_action(&self, action: &Action) -> bool {
+        let pos = self.bot.position;
+        let neighbors = self.find_neighbors(&pos);
+        match action {
+            Action::Right => match neighbors.3 {
+                Some(&square) => match square {
+                    MapSquare::Empty { power_up: _ } | MapSquare::Wrapped { power_up: _ } => true,
+                    _ => false,
+                },
+                _ => false,
+            },
+            _ => false,
+        }
     }
 }
 
