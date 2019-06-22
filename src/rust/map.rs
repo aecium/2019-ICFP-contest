@@ -274,7 +274,18 @@ impl Map {
         let neighbors = self.find_neighbors(&pos);
         match action {
             Action::Start => true,
+            Action::Drill =>
+            if self.bot.drill > 0 {
+                true
+            },
             Action::Right => match &neighbors.1 {
+                Some(square) => match square {
+                    MapSquare::Empty { power_up: _ } | MapSquare::Wrapped { power_up: _ } => true,
+                    _ => false,
+                },
+                _ => false,
+            },
+            Action::Left => match &neighbors.3 {
                 Some(square) => match square {
                     MapSquare::Empty { power_up: _ } | MapSquare::Wrapped { power_up: _ } => true,
                     _ => false,
