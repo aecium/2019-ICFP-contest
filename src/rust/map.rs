@@ -288,6 +288,8 @@ impl Map {
         match action {
             Action::Right => {
                 self.bot.move_self(&Direction::East);
+                let to_paint = self.bot.manipulators.iter().map(|x|self.bot.position.offset_by(&x)).collect::<Vec<_>>(); 
+                //to_paint.iter().map(|&x|self.paint)
                 return Result::Ok(());
             }
             _ => panic!("I'm sorry, I can't do that Dave"),
