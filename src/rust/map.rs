@@ -85,16 +85,7 @@ impl Map {
             }
         }
 
-<<<<<<< HEAD
-        Map::fill_map(
-            &mut map,
-            bot_position,
-            MapSquare::Empty { power_up: None },
-            MapSquare::Empty { power_up: None },
-        );
-=======
         Map::fill_map(&mut map, bot_position.clone(), MapSquare::Empty { power_up: None }, MapSquare::Empty { power_up: None });
->>>>>>> a571f46e2c9919d66a2945ad520315253aeb89e5
         for point in obstacle_starts {
             Map::fill_map(&mut map, point, MapSquare::Blocked, MapSquare::Blocked);
         }

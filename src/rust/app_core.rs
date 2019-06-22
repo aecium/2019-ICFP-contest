@@ -13,23 +13,22 @@ pub struct Point {
     pub y: usize,
 }
 
-impl Point {
-    pub fn offset_by(&self, offset: &Offset) -> Self {
+impl Point{
+    pub fn offset_by(&self,offset: &Offset) -> Self {
+        
         let mut x_result = self.x as i64 + offset.x;
         let mut y_result = self.y as i64 + offset.y;
 
+        //if either are less than 0 set the offset to the origin
         if x_result < 0 || y_result < 0 {
-            x_result = 0;
-            y_result = 0;
+            x_result = self.x as i64;
+            y_result = self.y as i64;
         }
 
         let x_result = x_result as usize;
         let y_result = y_result as usize;
 
-        Point {
-            x: x_result,
-            y: y_result,
-        }
+        Point{x:x_result,y:y_result}
     }
 }
 
