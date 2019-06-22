@@ -298,7 +298,7 @@ impl Map {
             Action::Right => {
                 self.bot.move_self(&Direction::East);
                 let to_paint = self.bot.manipulators.iter().map(|x|self.bot.position.offset_by(&x)).collect::<Vec<_>>(); 
-                //to_paint.iter().map(|&x|self.paint)
+                let _ = to_paint.iter().map(|&x|self.paint(x)).collect::<Vec<_>>();
                 return Result::Ok(());
             }
             _ => panic!("I'm sorry, I can't do that Dave"),
