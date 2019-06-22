@@ -233,9 +233,9 @@ impl Map {
 
         //let mySquare = &self.squares.get(index: I)[pos.x]
         let my_square = match squares.get(pos.y) {
-            Some(x) => match x.get(pos.y) {
+            Some(x) => match x.get(pos.x) {
                 Some(square) => square,
-                _ => panic!("invalid"),
+                _ => panic!("invalid, row is {:?}", x),
             },
             _ => panic!("invalid"),
         };
