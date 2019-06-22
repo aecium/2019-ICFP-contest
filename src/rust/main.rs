@@ -13,7 +13,7 @@ mod app_core;
 mod powerups;
 
 mod map;
-use map::{Map};
+use map::Map;
 
 mod bot;
 use bot::*;
