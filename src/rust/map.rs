@@ -2,11 +2,20 @@ use std::cmp;
 use std::fmt;
 
 use crate::app_core::Point;
+use crate::bot::*;
 use crate::powerups::PowerUp;
 
+pub type Neighbors<'a> = (
+    Option<&'a MapSquare>,
+    Option<&'a MapSquare>,
+    Option<&'a MapSquare>,
+    Option<&'a MapSquare>,
+    &'a MapSquare,
+);
 pub struct Map {
     contour: Vec<Point>,
     squares: Vec<Vec<MapSquare>>,
+    bot: Bot,
 }
 impl Map {
     pub fn from_map_string(map_string: &str) -> Self {
@@ -106,7 +115,7 @@ impl Map {
             //println!("{}, {}, {:?}", x, y, todo);
             //println!("{:?}", done);
         }
-
+        
         Map {
             contour: points,
             squares: map,
@@ -196,17 +205,7 @@ impl Map {
         }
     }
 
-    pub fn find_neighbors(
-        &self,
-        pos: &Point,
-    ) -> (
-        Option<&MapSquare>,
-        Option<&MapSquare>,
-        Option<&MapSquare>,
-        Option<&MapSquare>,
-        &MapSquare,
-    ) // (north, east, south, west, center)
-    {
+    pub fn find_neighbors(&self, pos: &Point) -> Neighbors {
         let squares = &self.squares;
 
         //let mySquare = &self.squares.get(index: I)[pos.x]
@@ -228,6 +227,21 @@ impl Map {
 
     pub fn is_complete(&self) -> bool {
         return false;
+    }
+
+    pub fn is_valid_action(&self, action: &Action) -> bool {
+        let pos = self.bot.position;
+        let neighbors = self.find_neighbors(&pos);
+        match action {
+            Action::Right => match neighbors.3 {
+                Some(&square) => match square {
+                    MapSquare::Empty { power_up: _ } | MapSquare::Wrapped { power_up: _ } => true,
+                    _ => false,
+                },
+                _ => false,
+            },
+            _ => false,
+        }
     }
 }
 

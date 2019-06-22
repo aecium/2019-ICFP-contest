@@ -11,6 +11,8 @@ use map::{Map, MapSquare};
 
 mod bot;
 use bot::*;
+mod solvers;
+use solvers::boko_solver;
 
 fn main() {
     let args: Vec<String> = env::args().collect();
