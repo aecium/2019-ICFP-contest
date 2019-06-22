@@ -70,10 +70,10 @@ pub enum Action {
 impl ToChar for Action {
     fn to_char(&self) -> char {
         match self {
-            Up => 'W',
-            Right => 'D',
-            Down => 'S',
-            Left => 'A',
+            Action::Up => 'W',
+            Action::Right => 'D',
+            Action::Down => 'S',
+            Action::Left => 'A',
             _ => panic!("unknown output char"),
         }
     }
