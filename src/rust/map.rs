@@ -17,6 +17,9 @@ pub struct Map {
     contour: Vec<Point>,
     squares: Vec<Vec<MapSquare>>,
     bot: Bot,
+    pub visualize: bool,
+    w: usize,
+    h: usize,
 }
 impl Map {
     pub fn from_map_string(map_string: &str) -> Self {
@@ -96,10 +99,13 @@ impl Map {
         }
         let remaining_spaces = Self::count_unwrapped(&map);
         Map {
+            w: map[0].len(),
+            h: map.len(),
             contour: points,
             squares: map,
             remaining: remaining_spaces,
             bot: Bot::new(bot_position.clone(), Direction::East),
+            visualize: false,
         }
     }
 
@@ -140,8 +146,6 @@ impl Map {
             if y < h && !done[y + 1][x] && (map[y + 1][x] == search || map[y + 1][x] == oob) {
                 todo.push(Point { x: x, y: y + 1 });
             }
-            //println!("{}, {}, {:?}", x, y, todo);
-            //println!("{:?}", done);
         }
     }
 
@@ -235,9 +239,9 @@ impl Map {
         let my_square = match squares.get(pos.y) {
             Some(x) => match x.get(pos.x) {
                 Some(square) => square,
-                _ => panic!("invalid, row is {:?}", x),
+                _ => panic!("invalid at {:?} from map of size (x:{}, y:{}) on square {:?}", pos, self.w, self.h, self.squares[pos.y][pos.x]),
             },
-            _ => panic!("invalid"),
+            _ => panic!("invalid at {:?} from map (x:{}, y:{}) on square {:?}", pos, self.w, self.h, self.squares[pos.y][pos.x]),
         };
 
         let north = squares.get(pos.y + 1).and_then(|row| row.get(pos.x));
@@ -284,10 +288,14 @@ impl Map {
         let pos = &self.bot.position;
         let neighbors = self.find_neighbors(&pos);
         match action {
-            Action::Start | Action::Nop | Action::RotAnticlock | Action::RotClock | Action::Reset => true,
+            Action::Start
+            | Action::Nop
+            | Action::RotAnticlock
+            | Action::RotClock
+            | Action::Reset => true,
             Action::Drill => self.bot.drill > 0,
             Action::Boost => self.bot.boost > 0,
-            Action::Attach{dx: xpos,dy: ypos} => self.bot.extension > 0, //and more
+            //Action::Attach { dx: xpos, dy: ypos } => self.bot.extension > 0 && is_adjacent(), //and more
             //Action::Shift => true, //not really
             Action::DropBeacon => true,
             Action::Right => match &neighbors.1 {
@@ -337,7 +345,9 @@ impl Map {
     }
 
     pub fn perform(&mut self, action: &Action) -> Result<(), String> {
-        println!("{:?} {:?}", self, action);
+        if self.visualize {
+            println!("{:?} {:?}", self, action);
+        }
         if !self.is_valid_action(action) {
             return Result::Err("Action is invalid".to_string());
         }
@@ -383,8 +393,10 @@ impl Map {
             .map(|&x| self.paint(x))
             .filter(|&x| x)
             .count();
-        println!("painted count: {}", painted_count);
-        println!("remaining count: {}", self.remaining);
+        if self.visualize {
+            println!("painted count: {}", painted_count);
+            println!("remaining count: {}", self.remaining);
+        }
         self.remaining = self.remaining - painted_count;
     }
 }
