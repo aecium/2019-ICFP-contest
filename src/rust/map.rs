@@ -94,11 +94,11 @@ impl Map {
         for point in obstacle_starts {
             Map::fill_map(&mut map, point, MapSquare::Blocked, MapSquare::Blocked);
         }
-
+        let remaining_spaces = Self::count_unwrapped(&map);
         Map {
             contour: points,
             squares: map,
-            remaining: 1,
+            remaining: remaining_spaces,
             bot: Bot::new(bot_position.clone(), Direction::East),
         }
     }
@@ -248,12 +248,13 @@ impl Map {
         return (north, east, south, west, my_square);
     }
 
-    pub fn get_remaining(&self) -> usize {
+    fn count_unwrapped(squares: &Vec<Vec<MapSquare>>) -> usize
+    {
         let mut remaining = 0;
-        for y in (0..self.squares.len()) {
-            let row = &self.squares[y];
+        for y in 0..squares.len() {
+            let row = &squares[y];
             for x in 0..row.len() {
-                match self.squares[y][x] {
+                match squares[y][x] {
                     MapSquare::Empty { power_up: _ } => remaining += 1,
                     MapSquare::Wrapped { power_up: _ }
                     | MapSquare::Blocked
@@ -263,6 +264,9 @@ impl Map {
             }
         }
         return remaining;
+    }
+    pub fn get_remaining(&self) -> usize {
+        return self.remaining
     }
 
     pub fn is_complete(&self) -> bool {
@@ -299,12 +303,17 @@ impl Map {
         }
     }
 
-    pub fn paint(&mut self, point: Point) {
+    pub fn paint(&mut self, point: Point) -> bool {
         if point.y < self.squares.len() && point.x < self.squares[0].len() {
             match self.squares[point.y][point.x] {
-                MapSquare::Empty { power_up: _ } => self.squares[point.y][point.x] = MapSquare::Wrapped { power_up: None },
-                _ => {},
+                MapSquare::Empty { power_up: _ } => {
+                    self.squares[point.y][point.x] = MapSquare::Wrapped { power_up: None };
+                    return true
+                },
+                _ => return false,
             }
+        } else {
+            false
         }
     }
 
@@ -339,7 +348,10 @@ impl Map {
 
     fn paint_current_position(&mut self) {
         let squares_to_paint = self.bot.manipulators.iter().map(|x| self.bot.position.offset_by(&x)).filter_map(|x| x.ok()).collect::<Vec<_>>();
-        let _ = squares_to_paint.iter().map(|&x| self.paint(x)).collect::<Vec<_>>();
+        let painted_count = squares_to_paint.iter().map(|&x| self.paint(x)).filter(|&x| x).count();
+        println!("painted count: {}", painted_count);
+        println!("remaining count: {}", self.remaining);
+        self.remaining = self.remaining - painted_count;
     }
 }
 
