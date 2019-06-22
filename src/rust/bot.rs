@@ -69,7 +69,9 @@ pub trait ToChar {
     fn to_char(&self) -> char;
 }
 
+#[derive(Debug)]
 pub enum Action {
+    Start,
     Up,
     Right,
     Down,

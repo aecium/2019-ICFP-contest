@@ -248,7 +248,7 @@ impl Map {
         return (north, east, south, west, my_square);
     }
 
-    pub fn is_complete(&self) -> bool {
+    pub fn get_remaining(&self) -> usize {
         let mut remaining = 0;
         for y in (0..self.squares.len()) {
             let row = &self.squares[y];
@@ -262,15 +262,33 @@ impl Map {
                 };
             }
         }
-        println!("remaining: {}", remaining);
-        return remaining == 0;
+        return remaining;
+    }
+
+    pub fn is_complete(&self) -> bool {
+        return self.get_remaining() == 0;
     }
 
     pub fn is_valid_action(&self, action: &Action) -> bool {
         let pos = &self.bot.position;
         let neighbors = self.find_neighbors(&pos);
         match action {
+            Action::Start => true,
             Action::Right => match &neighbors.1 {
+                Some(square) => match square {
+                    MapSquare::Empty { power_up: _ } | MapSquare::Wrapped { power_up: _ } => true,
+                    _ => false,
+                },
+                _ => false,
+            },
+            Action::Up => match &neighbors.0 {
+                Some(square) => match square {
+                    MapSquare::Empty { power_up: _ } | MapSquare::Wrapped { power_up: _ } => true,
+                    _ => false,
+                },
+                _ => false,
+            },
+            Action::Down => match &neighbors.2 {
                 Some(square) => match square {
                     MapSquare::Empty { power_up: _ } | MapSquare::Wrapped { power_up: _ } => true,
                     _ => false,
@@ -291,12 +309,30 @@ impl Map {
     }
 
     pub fn perform(&mut self, action: &Action) -> Result<(),String> {
+        println!("{:?} {:?}", self, action);
         if !self.is_valid_action(action) {
             return Result::Err("Action is invalid".to_string());
         }
         match action {
+            Action::Start => {
+                let to_paint = self.bot.manipulators.iter().map(|x|self.bot.position.offset_by(&x)).collect::<Vec<_>>(); 
+                let _ = to_paint.iter().map(|&x|self.paint(x)).collect::<Vec<_>>();
+                return Result::Ok(());
+            }
             Action::Right => {
                 self.bot.move_self(&Direction::East);
+                let to_paint = self.bot.manipulators.iter().map(|x|self.bot.position.offset_by(&x)).collect::<Vec<_>>(); 
+                let _ = to_paint.iter().map(|&x|self.paint(x)).collect::<Vec<_>>();
+                return Result::Ok(());
+            }
+            Action::Up => {
+                self.bot.move_self(&Direction::North);
+                let to_paint = self.bot.manipulators.iter().map(|x|self.bot.position.offset_by(&x)).collect::<Vec<_>>(); 
+                let _ = to_paint.iter().map(|&x|self.paint(x)).collect::<Vec<_>>();
+                return Result::Ok(());
+            }
+            Action::Down => {
+                self.bot.move_self(&Direction::South);
                 let to_paint = self.bot.manipulators.iter().map(|x|self.bot.position.offset_by(&x)).collect::<Vec<_>>(); 
                 let _ = to_paint.iter().map(|&x|self.paint(x)).collect::<Vec<_>>();
                 return Result::Ok(());
@@ -318,7 +354,11 @@ impl fmt::Debug for Map {
             let s: String = cols.into_iter().collect();
             map.push(s);
         }
-        write!(f, "map:\n{}", map.join("\n"))
+        write!(f, "Map {{\n");
+        write!(f, "  squares:\n    {}\n", map.join("\n    "));
+        write!(f, "  remaining: {}\n", self.get_remaining());
+        write!(f, "  bot: {},{}\n", self.bot.position.x, self.bot.position.y);
+        write!(f, "}}")
     }
 }
 

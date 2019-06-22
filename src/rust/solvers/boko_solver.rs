@@ -3,6 +3,14 @@ use crate::map::*;
 
 pub fn solve(map: &mut Map) -> Vec<Action> {
     let mut action_list = Vec::new();
+    map.perform(&Action::Start);
+    map.perform(&Action::Up);
+    action_list.push(Action::Up);
+    map.perform(&Action::Up);
+    action_list.push(Action::Up);
+    map.perform(&Action::Down);
+    action_list.push(Action::Down);
+
     while !map.is_complete()  {
         let my_action = Action::Right;
 
