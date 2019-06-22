@@ -4,6 +4,10 @@ use std::fs::File;
 use std::io::prelude::*;
 use std::path::Path;
 
+#[macro_use]
+extern crate clap;
+use clap::App;
+
 mod app_core;
 
 mod powerups;
@@ -14,26 +18,31 @@ use map::Map;
 mod bot;
 use bot::*;
 mod solvers;
-use solvers::right_solver;
+use solvers::boko_solver;
 
 mod test;
 
 fn main() {
     test::test();
 
-    let args: Vec<String> = env::args().collect();
+    let yaml = load_yaml!("args.yaml");
+    let matches = App::from_yaml(yaml).get_matches();
+    let visualize = matches.is_present("visualize");
 
-    for filename in &args[1..] {
+    for filename in matches.values_of("INPUT").unwrap() {
         let contents = fs::read_to_string(filename).expect("Failed to read.");
 
-        println!("{}: {}", filename, contents);
+        println!("Processing file: {}", filename);
+        if visualize {
+            println!("{}", contents);
+        }
 
         let mut map = Map::from_map_string(&contents);
 
         println!("map: {:?}", map);
         println!("complete?: {}", map.is_complete());
 
-        let solution = right_solver::solve(&mut map);
+        let solution = boko_solver::solve(&mut map);
         let solution_string = solution
             .into_iter()
             .map(|a| a.to_char())

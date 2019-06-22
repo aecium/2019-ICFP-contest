@@ -365,6 +365,11 @@ impl Map {
                 self.paint_current_position();
                 return Result::Ok(());
             }
+            Action::Left => {
+                self.bot.move_self(&Direction::West);
+                self.paint_current_position();
+                return Result::Ok(());
+            }
             _ => panic!("I'm sorry, I can't do that Dave"),
         }
     }

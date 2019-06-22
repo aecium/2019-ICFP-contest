@@ -98,14 +98,3 @@ impl ToChar for Action {
         }
     }
 }
-
-impl Distribution<Action> for Standard {
-    fn sample<R: Rng + ?Sized>(&self, rng: &mut R) -> Action {
-        match rng.gen_range(0, 4) {
-            0 => Action::Up,
-            1 => Action::Right,
-            2 => Action::Down,
-            _ => Action::Left,
-        }
-    }
-}
