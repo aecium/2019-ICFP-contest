@@ -3,12 +3,12 @@ use crate::map::*;
 
 pub fn solve(map: &mut Map) -> Vec<Action> {
     let mut action_list = Vec::new();
-    map.perform(&Action::Start);
-    map.perform(&Action::Up);
+    map.perform(&Action::Start).unwrap();
+    map.perform(&Action::Up).unwrap();
     action_list.push(Action::Up);
-    map.perform(&Action::Up);
+    map.perform(&Action::Up).unwrap();
     action_list.push(Action::Up);
-    map.perform(&Action::Down);
+    map.perform(&Action::Down).unwrap();
     action_list.push(Action::Down);
 
     while !map.is_complete() {
