@@ -18,6 +18,8 @@ pub struct Map {
     squares: Vec<Vec<MapSquare>>,
     bot: Bot,
     pub visualize: bool,
+    w: usize,
+    h: usize,
 }
 impl Map {
     pub fn from_map_string(map_string: &str) -> Self {
@@ -97,6 +99,8 @@ impl Map {
         }
         let remaining_spaces = Self::count_unwrapped(&map);
         Map {
+            w: map[0].len(),
+            h: map.len(),
             contour: points,
             squares: map,
             remaining: remaining_spaces,
@@ -235,9 +239,9 @@ impl Map {
         let my_square = match squares.get(pos.y) {
             Some(x) => match x.get(pos.y) {
                 Some(square) => square,
-                _ => panic!("invalid"),
+                _ => panic!("invalid at {:?} from map of size (x:{}, y:{})", pos, self.w, self.h),
             },
-            _ => panic!("invalid"),
+            _ => panic!("invalid at {:?} from map (x:{}, y:{})", pos, self.w, self.h),
         };
 
         let north = squares.get(pos.y + 1).and_then(|row| row.get(pos.x));

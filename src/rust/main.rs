@@ -46,7 +46,8 @@ fn main() {
             .into_iter()
             .map(|a| a.to_char())
             .collect::<String>();
-        println!("solution: {0}", solution_string);
+        println!("solution: {}", solution_string);
+        println!("solution length: {}", solution_string.len());
         println!("complete?: {}", map.is_complete());
 
         // Store the solutions
