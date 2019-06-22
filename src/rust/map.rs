@@ -1,7 +1,7 @@
 use std::cmp;
 use std::fmt;
 
-use crate::app_core::Point;
+use crate::app_core::{Point,Direction};
 use crate::bot::*;
 use crate::powerups::PowerUp;
 
@@ -264,6 +264,19 @@ impl Map {
                 _ => false,
             },
             _ => false,
+        }
+    }
+
+    pub fn perform(&self, action: &Action) -> Result<(),String> {
+        if !self.is_valid_action(action) {
+            return Result::Err("Action is invalid".to_string());
+        }
+        match action {
+            Action::Right => {
+                self.bot.move_self(Direction::East);
+                return Result::Ok(());
+            }
+            _ => panic!("I'm sorry, I can't do that Dave");
         }
     }
 }

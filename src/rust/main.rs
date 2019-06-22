@@ -21,11 +21,15 @@ fn main() {
 
     println!("{}: {}", filename, contents);
 
-    let map = Map::from_map_string(&contents);
+    let mut map = Map::from_map_string(&contents);
 
     println!("map: {:?}", map);
     println!("complete?: {}", map.is_complete());
 
+    let solution = boko_solver::solve(&mut map);
+    println!("solution: {0}", solution.into_iter().collect())
+    println!("complete?: {}", map.is_complete());
+    
     println!("🌮 Free Tacos! 🌮");
 }
 
