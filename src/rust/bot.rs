@@ -5,6 +5,7 @@ use rand::{
 
 use crate::app_core::{Direction, Offset, Point};
 
+#[derive(Clone)]
 pub struct Bot {
     pub position: Point,
     pub facing: Direction,
