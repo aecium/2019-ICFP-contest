@@ -8,7 +8,7 @@ mod powerups;
 use powerups::PowerUp;
 
 mod map;
-use map::{Map,MapSquare,};
+use map::{Map, MapSquare};
 
 mod bot;
 use bot::*;

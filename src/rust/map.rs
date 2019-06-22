@@ -118,6 +118,8 @@ impl Map {
         let mut ps = points.to_vec();
         let mt = MapSquare::Empty { power_up: None };
         let oob = MapSquare::OOB;
+        let h = map.len()-1;
+        let w = map[0].len()-1;
         ps.push(points[0].clone());
         for point in ps {
             if first {
@@ -149,26 +151,41 @@ impl Map {
                     for y in min_y..=max_y {
                         map[y][x] = square.clone();
                         if square==mt {
-                            if up && x<max_x && map[y][x+1]==oob {
+                            if up && x<w && map[y][x+1]==oob {
                                 map[y][x+1] = MapSquare::OOB2;
-                                if y>0 && map[y-1][x-1]!=mt {
-                                    map[y-1][x-1] = MapSquare::OOB2;
+                                if y>0 && map[y-1][x+1]!=mt {
+                                    map[y-1][x+1] = MapSquare::OOB2;
                                 }
-                                if y < max_y {
-                                    map[y+1][x-1] = MapSquare::OOB2;
+                                if y < h && map[y+1][x+1]!=mt {
+                                    map[y+1][x+1] = MapSquare::OOB2;
                                 }
                             }
                             if down && x>0 && map[y][x-1]==oob {
                                 map[y][x-1] = MapSquare::OOB2;
-                                if y>0 {
+                                if y>0 && map[y-1][x-1]!=mt {
                                     map[y-1][x-1] = MapSquare::OOB2;
                                 }
+                                if y < h && map[y+1][x-1]!=mt {
+                                    map[y+1][x-1] = MapSquare::OOB2;
+                                }
                             }
-                            if right && y<max_y && map[y+1][x]==oob {
+                            if left && y<h && map[y+1][x]==oob {
                                 map[y+1][x] = MapSquare::OOB2;
+                                if x>0 && map[y+1][x-1]!=mt {
+                                    map[y+1][x-1] = MapSquare::OOB2;
+                                }
+                                if x < w && map[y+1][x+1]!=mt {
+                                    map[y+1][x+1] = MapSquare::OOB2;
+                                }
                             }
-                            if left && y>0 && map[y-1][x]==oob {
+                            if right && y>0 && map[y-1][x]==oob {
                                 map[y-1][x] = MapSquare::OOB2;
+                                if x>0 && map[y-1][x-1]!=mt {
+                                    map[y-1][x-1] = MapSquare::OOB2;
+                                }
+                                if x < w && map[y-1][x+1]!=mt {
+                                    map[y-1][x+1] = MapSquare::OOB2;
+                                }
                             }
                         }
                     }
