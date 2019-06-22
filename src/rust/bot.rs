@@ -17,10 +17,10 @@ pub struct Bot {
 }
 
 impl Bot {
-    pub fn new(tPosition: Point, tDirection: Direction) -> Self {
+    pub fn new(pos: Point, dir: Direction) -> Self {
         Bot {
-            position: tPosition,
-            facing: tDirection,
+            position: pos,
+            facing: dir,
             extension: 0,
             boost: 0,
             drill: 0,
