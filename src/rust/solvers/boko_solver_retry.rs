@@ -10,7 +10,7 @@ use rand::{
 pub fn solve(map: &mut Map, max_moves: usize) -> Vec<Action> {
     let mut best = max_moves+1;
     let mut best_actions = Vec::new();
-    let tries = 10000000 / max_moves;
+    let tries = 100000000 / max_moves;
     let mut has_solution = false;
 
     for try_num in 0..tries {

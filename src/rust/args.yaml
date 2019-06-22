@@ -7,6 +7,10 @@ args:
         short: v
         long: visualize
         help: Print the map at each action
+    - solver:
+        short: s
+        long: solver
+        help: Select the solver.  Default is boko_solver.
     - INPUT:
         help: Input file(s) to use
         required: true
