@@ -1,7 +1,7 @@
 use std::cmp;
 use std::fmt;
 
-use crate::app_core::Point;
+use crate::app_core::{Direction, Point};
 use crate::bot::*;
 use crate::powerups::PowerUp;
 
@@ -85,7 +85,7 @@ impl Map {
             }
         }
 
-        Map::fill_map(&mut map, bot_position, MapSquare::Empty { power_up: None }, MapSquare::Empty { power_up: None });
+        Map::fill_map(&mut map, bot_position.clone(), MapSquare::Empty { power_up: None }, MapSquare::Empty { power_up: None });
         for point in obstacle_starts {
             Map::fill_map(&mut map, point, MapSquare::Blocked, MapSquare::Blocked);
         }
@@ -94,6 +94,7 @@ impl Map {
             contour: points,
             squares: map,
             remaining: 1,
+            bot: Bot::new(bot_position.clone(), Direction::East),
         }
     }
 
