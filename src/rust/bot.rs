@@ -19,28 +19,28 @@ pub struct Bot {
 
 impl Bot {
     pub fn move_self(&mut self, direction: &Direction) {
-        let position = &self.position;
+        let position = &self.Position;
         match direction {
             Direction::North => {
-                self.position = Point {
+                self.Position = Point {
                     x: position.x,
                     y: position.y + 1,
                 }
             }
             Direction::East => {
-                self.position = Point {
+                self.Position = Point {
                     x: position.x + 1,
                     y: position.y,
                 }
             }
             Direction::South => {
-                self.position = Point {
+                self.Position = Point {
                     x: position.x,
                     y: position.y - 1,
                 }
             }
             Direction::West => {
-                self.position = Point {
+                self.Position = Point {
                     x: position.x - 1,
                     y: position.y,
                 }
