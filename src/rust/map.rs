@@ -85,7 +85,12 @@ impl Map {
             }
         }
 
-        Map::fill_map(&mut map, bot_position.clone(), MapSquare::Empty { power_up: None }, MapSquare::Empty { power_up: None });
+        Map::fill_map(
+            &mut map,
+            bot_position,
+            MapSquare::Empty { power_up: None },
+            MapSquare::Empty { power_up: None },
+        );
         for point in obstacle_starts {
             Map::fill_map(&mut map, point, MapSquare::Blocked, MapSquare::Blocked);
         }
@@ -98,7 +103,12 @@ impl Map {
         }
     }
 
-    fn fill_map(map: &mut Vec<Vec<MapSquare>>, start: Point, search: MapSquare, replace: MapSquare) {
+    fn fill_map(
+        map: &mut Vec<Vec<MapSquare>>,
+        start: Point,
+        search: MapSquare,
+        replace: MapSquare,
+    ) {
         let h = map.len() - 1;
         let w = map[0].len() - 1;
         let mut done: Vec<Vec<bool>> = Vec::new();
@@ -244,8 +254,11 @@ impl Map {
             let row = &self.squares[y];
             for x in 0..row.len() {
                 match self.squares[y][x] {
-                    MapSquare::Empty { power_up: _ } => remaining+=1,
-                    MapSquare::Wrapped { power_up: _ } | MapSquare::Blocked | MapSquare::OOB | MapSquare::Boundry => {},
+                    MapSquare::Empty { power_up: _ } => remaining += 1,
+                    MapSquare::Wrapped { power_up: _ }
+                    | MapSquare::Blocked
+                    | MapSquare::OOB
+                    | MapSquare::Boundry => {}
                 };
             }
         }
