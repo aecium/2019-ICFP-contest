@@ -1,7 +1,7 @@
 use std::cmp;
 use std::fmt;
 
-use crate::app_core::{Point,Direction};
+use crate::app_core::{Direction, Point};
 use crate::bot::*;
 use crate::powerups::PowerUp;
 
@@ -239,17 +239,24 @@ impl Map {
             },
             _ => panic!("invalid"),
         };
-        
+
         let north = squares.get(pos.y + 1).and_then(|row| row.get(pos.x));
         let east = squares.get(pos.y).and_then(|row| row.get(pos.x + 1));
-        let south = if pos.y > 0 { squares.get(pos.y - 1).and_then(|row| row.get(pos.x))} else { None };
-        let west = if pos.x > 0 { squares.get(pos.y).and_then(|row| row.get(pos.x - 1)) } else { None };
+        let south = if pos.y > 0 {
+            squares.get(pos.y - 1).and_then(|row| row.get(pos.x))
+        } else {
+            None
+        };
+        let west = if pos.x > 0 {
+            squares.get(pos.y).and_then(|row| row.get(pos.x - 1))
+        } else {
+            None
+        };
 
         return (north, east, south, west, my_square);
     }
 
-    fn count_unwrapped(squares: &Vec<Vec<MapSquare>>) -> usize
-    {
+    fn count_unwrapped(squares: &Vec<Vec<MapSquare>>) -> usize {
         let mut remaining = 0;
         for y in 0..squares.len() {
             let row = &squares[y];
@@ -266,7 +273,7 @@ impl Map {
         return remaining;
     }
     pub fn get_remaining(&self) -> usize {
-        return self.remaining
+        return self.remaining;
     }
 
     pub fn is_complete(&self) -> bool {
@@ -308,8 +315,8 @@ impl Map {
             match self.squares[point.y][point.x] {
                 MapSquare::Empty { power_up: _ } => {
                     self.squares[point.y][point.x] = MapSquare::Wrapped { power_up: None };
-                    return true
-                },
+                    return true;
+                }
                 _ => return false,
             }
         } else {
@@ -317,7 +324,7 @@ impl Map {
         }
     }
 
-    pub fn perform(&mut self, action: &Action) -> Result<(),String> {
+    pub fn perform(&mut self, action: &Action) -> Result<(), String> {
         println!("{:?} {:?}", self, action);
         if !self.is_valid_action(action) {
             return Result::Err("Action is invalid".to_string());
@@ -347,8 +354,18 @@ impl Map {
     }
 
     fn paint_current_position(&mut self) {
-        let squares_to_paint = self.bot.manipulators.iter().map(|x| self.bot.position.offset_by(&x)).filter_map(|x| x.ok()).collect::<Vec<_>>();
-        let painted_count = squares_to_paint.iter().map(|&x| self.paint(x)).filter(|&x| x).count();
+        let squares_to_paint = self
+            .bot
+            .manipulators
+            .iter()
+            .map(|x| self.bot.position.offset_by(&x))
+            .filter_map(|x| x.ok())
+            .collect::<Vec<_>>();
+        let painted_count = squares_to_paint
+            .iter()
+            .map(|&x| self.paint(x))
+            .filter(|&x| x)
+            .count();
         println!("painted count: {}", painted_count);
         println!("remaining count: {}", self.remaining);
         self.remaining = self.remaining - painted_count;
@@ -370,7 +387,11 @@ impl fmt::Debug for Map {
         write!(f, "Map {{\n");
         write!(f, "  squares:\n    {}\n", map.join("\n    "));
         write!(f, "  remaining: {}\n", self.get_remaining());
-        write!(f, "  bot: {},{}\n", self.bot.position.x, self.bot.position.y);
+        write!(
+            f,
+            "  bot: {},{}\n",
+            self.bot.position.x, self.bot.position.y
+        );
         write!(f, "}}")
     }
 }

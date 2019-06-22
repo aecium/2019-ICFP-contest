@@ -1,8 +1,8 @@
 use std::env;
 use std::fs;
 use std::fs::File;
-use std::path::Path;
 use std::io::prelude::*;
+use std::path::Path;
 
 mod app_core;
 use app_core::Direction;
@@ -35,16 +35,24 @@ fn main() {
         println!("complete?: {}", map.is_complete());
 
         let solution = boko_solver::solve(&mut map);
-        let solution_string = solution.into_iter().map(|a| a.to_char()).collect::<String>();
+        let solution_string = solution
+            .into_iter()
+            .map(|a| a.to_char())
+            .collect::<String>();
         println!("solution: {0}", solution_string);
         println!("complete?: {}", map.is_complete());
 
         // Store the solutions
         let path = Path::new("solutions");
-        if !path.exists(){
+        if !path.exists() {
             fs::create_dir(path);
         }
-        let mut solution_filename = Path::new(filename).file_stem().unwrap().to_str().unwrap().to_owned();
+        let mut solution_filename = Path::new(filename)
+            .file_stem()
+            .unwrap()
+            .to_str()
+            .unwrap()
+            .to_owned();
         solution_filename.push_str(".sol");
         println!("{:?}", solution_filename);
         let file_path = path.join(Path::new(&solution_filename));
