@@ -24,6 +24,7 @@ fn main() {
     let map = Map::from_map_string(&contents);
 
     println!("map: {:?}", map);
+    println!("complete?: {}", map.is_complete());
 
     println!("🌮 Free Tacos! 🌮");
 }

@@ -13,6 +13,7 @@ pub type Neighbors<'a> = (
     &'a MapSquare,
 );
 pub struct Map {
+    remaining: usize,
     contour: Vec<Point>,
     squares: Vec<Vec<MapSquare>>,
     bot: Bot,
@@ -68,6 +69,7 @@ impl Map {
 
         Map::contour_map(&mut map, &mut points, MapSquare::Empty { power_up: None });
 
+        let mut obstacle_starts: Vec<Point> = Vec::new();
         for obstacle in obstacles {
             if obstacle.len() > 0 {
                 let obstacle = obstacle.trim_matches('(').trim_matches(')').split("),(");
@@ -78,47 +80,57 @@ impl Map {
                     let y = p[1].parse::<usize>().unwrap();
                     points.push(Point { x: x, y: y })
                 }
+                obstacle_starts.push(points[0].clone());
                 Map::contour_map(&mut map, &mut points, MapSquare::Blocked);
             }
         }
 
+        Map::fill_map(&mut map, bot_position, MapSquare::Empty { power_up: None }, MapSquare::Empty { power_up: None });
+        for point in obstacle_starts {
+            Map::fill_map(&mut map, point, MapSquare::Blocked, MapSquare::Blocked);
+        }
+
+        Map {
+            contour: points,
+            squares: map,
+            remaining: 1,
+        }
+    }
+
+    fn fill_map(map: &mut Vec<Vec<MapSquare>>, start: Point, search: MapSquare, replace: MapSquare) {
+        let h = map.len() - 1;
+        let w = map[0].len() - 1;
         let mut done: Vec<Vec<bool>> = Vec::new();
-        for _y in 0..max_y + 1 {
+        for _y in 0..h + 1 {
             let mut row = Vec::new();
-            for _x in 0..max_x + 1 {
+            for _x in 0..w + 1 {
                 row.push(false);
             }
             done.push(row);
         }
         let mut todo: Vec<Point> = Vec::new();
-        todo.push(bot_position);
+        todo.push(start);
         while todo.len() > 0 {
             let point = todo.pop().unwrap();
             let x = point.x;
             let y = point.y;
-            let mt = MapSquare::Empty { power_up: None };
             let oob = MapSquare::OOB;
-            map[y][x] = MapSquare::Empty { power_up: None };
+            map[y][x] = replace.clone();
             done[y][x] = true;
-            if x > 0 && !done[y][x - 1] && (map[y][x - 1] == mt || map[y][x - 1] == oob) {
+            if x > 0 && !done[y][x - 1] && (map[y][x - 1] == search || map[y][x - 1] == oob) {
                 todo.push(Point { x: x - 1, y: y });
             }
-            if x < max_x && !done[y][x + 1] && (map[y][x + 1] == mt || map[y][x + 1] == oob) {
+            if x < w && !done[y][x + 1] && (map[y][x + 1] == search || map[y][x + 1] == oob) {
                 todo.push(Point { x: x + 1, y: y });
             }
-            if y > 0 && !done[y - 1][x] && (map[y - 1][x] == mt || map[y - 1][x] == oob) {
+            if y > 0 && !done[y - 1][x] && (map[y - 1][x] == search || map[y - 1][x] == oob) {
                 todo.push(Point { x: x, y: y - 1 });
             }
-            if y < max_y && !done[y + 1][x] && (map[y + 1][x] == mt || map[y + 1][x] == oob) {
+            if y < h && !done[y + 1][x] && (map[y + 1][x] == search || map[y + 1][x] == oob) {
                 todo.push(Point { x: x, y: y + 1 });
             }
             //println!("{}, {}, {:?}", x, y, todo);
             //println!("{:?}", done);
-        }
-        
-        Map {
-            contour: points,
-            squares: map,
         }
     }
 
@@ -162,39 +174,39 @@ impl Map {
                         map[y][x] = square.clone();
                         if square == mt {
                             if up && x < w && map[y][x + 1] == oob {
-                                map[y][x + 1] = MapSquare::OOB2;
+                                map[y][x + 1] = MapSquare::Boundry;
                                 if y > 0 && map[y - 1][x + 1] != mt {
-                                    map[y - 1][x + 1] = MapSquare::OOB2;
+                                    map[y - 1][x + 1] = MapSquare::Boundry;
                                 }
                                 if y < h && map[y + 1][x + 1] != mt {
-                                    map[y + 1][x + 1] = MapSquare::OOB2;
+                                    map[y + 1][x + 1] = MapSquare::Boundry;
                                 }
                             }
                             if down && x > 0 && map[y][x - 1] == oob {
-                                map[y][x - 1] = MapSquare::OOB2;
+                                map[y][x - 1] = MapSquare::Boundry;
                                 if y > 0 && map[y - 1][x - 1] != mt {
-                                    map[y - 1][x - 1] = MapSquare::OOB2;
+                                    map[y - 1][x - 1] = MapSquare::Boundry;
                                 }
                                 if y < h && map[y + 1][x - 1] != mt {
-                                    map[y + 1][x - 1] = MapSquare::OOB2;
+                                    map[y + 1][x - 1] = MapSquare::Boundry;
                                 }
                             }
                             if left && y < h && map[y + 1][x] == oob {
-                                map[y + 1][x] = MapSquare::OOB2;
+                                map[y + 1][x] = MapSquare::Boundry;
                                 if x > 0 && map[y + 1][x - 1] != mt {
-                                    map[y + 1][x - 1] = MapSquare::OOB2;
+                                    map[y + 1][x - 1] = MapSquare::Boundry;
                                 }
                                 if x < w && map[y + 1][x + 1] != mt {
-                                    map[y + 1][x + 1] = MapSquare::OOB2;
+                                    map[y + 1][x + 1] = MapSquare::Boundry;
                                 }
                             }
                             if right && y > 0 && map[y - 1][x] == oob {
-                                map[y - 1][x] = MapSquare::OOB2;
+                                map[y - 1][x] = MapSquare::Boundry;
                                 if x > 0 && map[y - 1][x - 1] != mt {
-                                    map[y - 1][x - 1] = MapSquare::OOB2;
+                                    map[y - 1][x - 1] = MapSquare::Boundry;
                                 }
                                 if x < w && map[y - 1][x + 1] != mt {
-                                    map[y - 1][x + 1] = MapSquare::OOB2;
+                                    map[y - 1][x + 1] = MapSquare::Boundry;
                                 }
                             }
                         }
@@ -226,7 +238,18 @@ impl Map {
     }
 
     pub fn is_complete(&self) -> bool {
-        return false;
+        let mut remaining = 0;
+        for y in (0..self.squares.len()) {
+            let row = &self.squares[y];
+            for x in 0..row.len() {
+                match self.squares[y][x] {
+                    MapSquare::Empty { power_up: _ } => remaining+=1,
+                    MapSquare::Wrapped { power_up: _ } | MapSquare::Blocked | MapSquare::OOB | MapSquare::Boundry => {},
+                };
+            }
+        }
+        println!("remaining: {}", remaining);
+        return remaining == 0;
     }
 
     pub fn is_valid_action(&self, action: &Action) -> bool {
@@ -267,16 +290,16 @@ pub enum MapSquare {
     Wrapped { power_up: Option<PowerUp> },
     Blocked,
     OOB,
-    OOB2,
+    Boundry,
 }
 impl MapSquare {
     fn to_char(&self) -> char {
         match self {
             //MapSquare::Empty{  } => '.',
-            //MapSquare::Wrapped => 'O',
+            MapSquare::Wrapped { power_up: _ } => 'O',
             MapSquare::Blocked => '~',
             MapSquare::OOB => '.',
-            MapSquare::OOB2 => ',',
+            MapSquare::Boundry => ',',
             _ => '#',
         }
     }
