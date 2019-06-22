@@ -33,13 +33,15 @@ pub fn solve(map: &mut Map) -> Vec<Action> {
             );
         }
 
-                if map.is_valid_action(&Action::Left) {
-            match map.perform(&Action::Left) {
+        let my_action = Action::Up;
+
+                if map.is_valid_action(&my_action) {
+            match map.perform(&my_action) {
                 Err(msg) => panic!(
                     "The Map wouldn't let me Right, it said {0}", /*,my_action*/
                     msg
                 ),
-                _ => action_list.push(Action::Left),
+                _ => action_list.push(my_action),
             }
         } else {
             println!("{:?}", map);

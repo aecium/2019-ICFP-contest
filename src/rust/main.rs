@@ -18,7 +18,7 @@ use map::Map;
 mod bot;
 use bot::*;
 mod solvers;
-use solvers::turn_right_solver;
+use solvers::spiral_right_solver;
 
 mod test;
 
@@ -41,7 +41,7 @@ fn main() {
         map.visualize = visualize;
         println!("map: {:?}", map);
 
-        let solution = turn_right_solver::solve(&mut map);
+        let solution = spiral_right_solver::solve(&mut map);
         let solution_string = solution
             .into_iter()
             .map(|a| a.to_char())
