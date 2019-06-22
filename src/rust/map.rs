@@ -1,7 +1,7 @@
 use std::cmp;
 use std::fmt;
 
-use crate::app_core::{Direction, Point};
+use crate::app_core::{Direction, Point, Rotation};
 use crate::bot::*;
 use crate::powerups::PowerUp;
 
@@ -373,6 +373,16 @@ impl Map {
             }
             Action::Left => {
                 self.bot.move_self(&Direction::West);
+                self.paint_current_position();
+                return Result::Ok(());
+            }
+            Action::RotClock => {
+                self.bot.rot(&Rotation::Clockwise);
+                self.paint_current_position();
+                return Result::Ok(());
+            }
+            Action::RotAnticlock => {
+                self.bot.rot(&Rotation::AntiClockwise);
                 self.paint_current_position();
                 return Result::Ok(());
             }
