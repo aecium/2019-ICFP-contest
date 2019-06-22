@@ -270,7 +270,7 @@ impl Map {
         let pos = &self.bot.position;
         let neighbors = self.find_neighbors(&pos);
         match action {
-            Action::Right => match &neighbors.3 {
+            Action::Right => match &neighbors.1 {
                 Some(square) => match square {
                     MapSquare::Empty { power_up: _ } | MapSquare::Wrapped { power_up: _ } => true,
                     _ => false,

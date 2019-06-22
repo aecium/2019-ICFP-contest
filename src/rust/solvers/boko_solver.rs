@@ -13,7 +13,7 @@ pub fn solve(map: &mut Map) -> Vec<Action> {
             }
         } else {
             println!("{:?}", map);
-            panic!("Solver has run out of ideas...");
+            panic!("Solver has run out of ideas... Here's so far:{}", (action_list.into_iter().map(|action| action.to_char()).collect::<String>()));
         }
     }
     return action_list;
