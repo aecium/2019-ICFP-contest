@@ -6,40 +6,40 @@ use rand::{
 use crate::app_core::{Direction, Point};
 
 pub struct Bot {
-    pub Position: Point,
-    pub Facing: Direction,
-    pub Extension: usize,
-    pub Boost: usize,
-    pub Drill: usize,
-    //pub Mysterious_Point: usize,
-    pub Teleports: usize,
-    pub Manipulators: Vec<Point>,
+    pub position: Point,
+    pub facing: Direction,
+    pub extension: usize,
+    pub boost: usize,
+    pub drill: usize,
+    //pub mysterious_point: usize,
+    pub teleports: usize,
+    pub manipulators: Vec<Point>,
 }
 
 impl Bot {
     pub fn move_self(&mut self, direction: &Direction) {
-        let position = &self.Position;
+        let position = &self.position;
         match direction {
             Direction::North => {
-                self.Position = Point {
+                self.position = Point {
                     x: position.x,
                     y: position.y + 1,
                 }
             }
             Direction::East => {
-                self.Position = Point {
+                self.position = Point {
                     x: position.x + 1,
                     y: position.y,
                 }
             }
             Direction::South => {
-                self.Position = Point {
+                self.position = Point {
                     x: position.x,
                     y: position.y - 1,
                 }
             }
             Direction::West => {
-                self.Position = Point {
+                self.position = Point {
                     x: position.x - 1,
                     y: position.y,
                 }

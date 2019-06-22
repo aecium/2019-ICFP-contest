@@ -29,7 +29,7 @@ fn main() {
 fn find_path(bot: &mut Bot, map: &mut Map) -> String {
     let mut solution: Vec<char> = Vec::new();
     while !map.is_complete() {
-        let neighbors = map.find_neighbors(&bot.Position);
+        let neighbors = map.find_neighbors(&bot.position);
         //let (north, east, south, west, my_square) = map.find_neighbors(&bot.position);
         let mut action: Action = rand::random();
 
