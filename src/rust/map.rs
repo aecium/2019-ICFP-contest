@@ -284,10 +284,14 @@ impl Map {
         let pos = &self.bot.position;
         let neighbors = self.find_neighbors(&pos);
         match action {
-            Action::Start | Action::Nop | Action::RotAnticlock | Action::RotClock | Action::Reset => true,
+            Action::Start
+            | Action::Nop
+            | Action::RotAnticlock
+            | Action::RotClock
+            | Action::Reset => true,
             Action::Drill => self.bot.drill > 0,
             Action::Boost => self.bot.boost > 0,
-            Action::Attach{dx: xpos,dy: ypos} => self.bot.extension > 0, //and more
+            //Action::Attach { dx: xpos, dy: ypos } => self.bot.extension > 0 && is_adjacent(), //and more
             //Action::Shift => true, //not really
             Action::DropBeacon => true,
             Action::Right => match &neighbors.1 {

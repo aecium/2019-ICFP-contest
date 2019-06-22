@@ -13,7 +13,7 @@ pub struct Bot {
     pub drill: usize,
     //pub mysterious_point: usize,
     pub teleports: usize,
-    pub manipulators: Vec<Offset>
+    pub manipulators: Vec<Offset>,
 }
 
 impl Bot {
@@ -79,12 +79,12 @@ pub enum Action {
     Nop,
     RotClock,
     RotAnticlock,
-    Attach { dx:u8, dy:u8},
+    Attach { dx: u8, dy: u8 },
     Boost,
     Drill,
     Reset,
     DropBeacon,
-    Shift {x:usize, y:usize},
+    Shift { x: usize, y: usize },
 }
 
 impl ToChar for Action {
