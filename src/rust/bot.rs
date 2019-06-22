@@ -1,9 +1,4 @@
-use rand::{
-    distributions::{Distribution, Standard},
-    Rng,
-};
-
-use crate::app_core::{Direction, Offset, Point};
+use crate::app_core::{Direction, Offset, Point, Rotation};
 
 pub struct Bot {
     pub position: Point,
@@ -63,6 +58,18 @@ impl Bot {
             }
         }
     }
+
+    pub fn rot(&mut self, dir : &Rotation) {
+        let manip_list :&Vec<Offset> = &self.manipulators;
+        match dir {
+            Rotation::Clockwise => {
+                self.manipulators = manip_list.into_iter().map(|old_offset| Offset{x: old_offset.y, y: old_offset.x * -1}).collect::<Vec<_>>();
+            }
+            Rotation::AntiClockwise => {
+                self.manipulators = manip_list.into_iter().map(|old_offset| Offset{x: old_offset.y * -1, y: old_offset.x}).collect::<Vec<_>>();
+            }
+        }
+    }
 }
 
 pub trait ToChar {
@@ -94,6 +101,8 @@ impl ToChar for Action {
             Action::Right => 'D',
             Action::Down => 'S',
             Action::Left => 'A',
+            Action::RotClock => 'E',
+            Action::RotAnticlock => 'Q',
             _ => panic!("unknown output char"),
         }
     }
