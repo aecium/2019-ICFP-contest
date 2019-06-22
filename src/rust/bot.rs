@@ -6,51 +6,51 @@ use rand::{
 use crate::app_core::{Direction, Point, Offset};
 
 pub struct Bot {
-    pub Position: Point,
-    pub Facing: Direction,
-    pub Extension: usize,
-    pub Boost: usize,
-    pub Drill: usize,
-    //pub Mysterious_Point: usize,
-    pub Teleports: usize,
-    pub Manipulators: Vec<Offset>,
+    pub position: Point,
+    pub facing: Direction,
+    pub extension: usize,
+    pub boost: usize,
+    pub drill: usize,
+    //pub mysterious_point: usize,
+    pub teleports: usize,
+    pub manipulators: Vec<Offset>,
 }
 
 impl Bot {
     pub fn new(tPosition: Point, tDirection: Direction)->Self{
-        Bot{Position: tPosition,
-        Facing: tDirection,
-        Extension: 0,
-        Boost: 0,
-        Drill: 0,
-        Teleports: 0,
-        Manipulators: vec![Offset{x:0,y:0},Offset{x:1,y:0},Offset{x:1,y:1},Offset{x:1,y:-1}], 
+        Bot{position: tPosition,
+        facing: tDirection,
+        extension: 0,
+        boost: 0,
+        drill: 0,
+        teleports: 0,
+        manipulators: vec![Offset{x:0,y:0},Offset{x:1,y:0},Offset{x:1,y:1},Offset{x:1,y:-1}], 
         }
     }
 
     pub fn move_self(&mut self, direction: &Direction) {
-        let position = &self.Position;
+        let position = &self.position;
         match direction {
             Direction::North => {
-                self.Position = Point {
+                self.position = Point {
                     x: position.x,
                     y: position.y + 1,
                 }
             }
             Direction::East => {
-                self.Position = Point {
+                self.position = Point {
                     x: position.x + 1,
                     y: position.y,
                 }
             }
             Direction::South => {
-                self.Position = Point {
+                self.position = Point {
                     x: position.x,
                     y: position.y - 1,
                 }
             }
             Direction::West => {
-                self.Position = Point {
+                self.position = Point {
                     x: position.x - 1,
                     y: position.y,
                 }
@@ -81,10 +81,10 @@ pub enum Action {
 impl ToChar for Action {
     fn to_char(&self) -> char {
         match self {
-            Up => 'W',
-            Right => 'D',
-            Down => 'S',
-            Left => 'A',
+            Action::Up => 'W',
+            Action::Right => 'D',
+            Action::Down => 'S',
+            Action::Left => 'A',
             _ => panic!("unknown output char"),
         }
     }
