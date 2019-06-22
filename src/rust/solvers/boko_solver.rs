@@ -12,7 +12,8 @@ pub fn solve(map: &mut Map) -> Vec<Action> {
                 _ => action_list.push(my_action),
             }
         } else {
-            panic!("Solver has run out of ideas...");
+            println!("{:?}", map);
+            panic!("Solver has run out of ideas... Here's so far:{}", (action_list.into_iter().map(|action| action.to_char()).collect::<String>()));
         }
     }
     return action_list;

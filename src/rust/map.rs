@@ -242,8 +242,8 @@ impl Map {
         
         let north = squares.get(pos.y + 1).and_then(|row| row.get(pos.x));
         let east = squares.get(pos.y).and_then(|row| row.get(pos.x + 1));
-        let south = squares.get(pos.y - 1).and_then(|row| row.get(pos.x));
-        let west = squares.get(pos.y).and_then(|row| row.get(pos.x - 1));
+        let south = if pos.y > 0 { squares.get(pos.y - 1).and_then(|row| row.get(pos.x))} else { None };
+        let west = if pos.x > 0 { squares.get(pos.y).and_then(|row| row.get(pos.x - 1)) } else { None };
 
         return (north, east, south, west, my_square);
     }
@@ -270,7 +270,7 @@ impl Map {
         let pos = &self.bot.position;
         let neighbors = self.find_neighbors(&pos);
         match action {
-            Action::Right => match &neighbors.3 {
+            Action::Right => match &neighbors.1 {
                 Some(square) => match square {
                     MapSquare::Empty { power_up: _ } | MapSquare::Wrapped { power_up: _ } => true,
                     _ => false,
@@ -278,6 +278,15 @@ impl Map {
                 _ => false,
             },
             _ => false,
+        }
+    }
+
+    pub fn paint(&mut self, point: Point) {
+        if point.y < self.squares.len() && point.x < self.squares[0].len() {
+            match self.squares[point.y][point.x] {
+                MapSquare::Empty { power_up: _ } => self.squares[point.y][point.x] = MapSquare::Wrapped { power_up: None },
+                _ => {},
+            }
         }
     }
 
