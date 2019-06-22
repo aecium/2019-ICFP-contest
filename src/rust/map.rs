@@ -17,6 +17,7 @@ pub struct Map {
     contour: Vec<Point>,
     squares: Vec<Vec<MapSquare>>,
     bot: Bot,
+    pub visualize: bool,
 }
 impl Map {
     pub fn from_map_string(map_string: &str) -> Self {
@@ -100,6 +101,7 @@ impl Map {
             squares: map,
             remaining: remaining_spaces,
             bot: Bot::new(bot_position.clone(), Direction::East),
+            visualize: false,
         }
     }
 
@@ -140,8 +142,6 @@ impl Map {
             if y < h && !done[y + 1][x] && (map[y + 1][x] == search || map[y + 1][x] == oob) {
                 todo.push(Point { x: x, y: y + 1 });
             }
-            //println!("{}, {}, {:?}", x, y, todo);
-            //println!("{:?}", done);
         }
     }
 
@@ -337,7 +337,9 @@ impl Map {
     }
 
     pub fn perform(&mut self, action: &Action) -> Result<(), String> {
-        println!("{:?} {:?}", self, action);
+        if self.visualize {
+            println!("{:?} {:?}", self, action);
+        }
         if !self.is_valid_action(action) {
             return Result::Err("Action is invalid".to_string());
         }
@@ -378,8 +380,10 @@ impl Map {
             .map(|&x| self.paint(x))
             .filter(|&x| x)
             .count();
-        println!("painted count: {}", painted_count);
-        println!("remaining count: {}", self.remaining);
+        if self.visualize {
+            println!("painted count: {}", painted_count);
+            println!("remaining count: {}", self.remaining);
+        }
         self.remaining = self.remaining - painted_count;
     }
 }

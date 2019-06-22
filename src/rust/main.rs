@@ -38,9 +38,8 @@ fn main() {
         }
 
         let mut map = Map::from_map_string(&contents);
-
+        map.visualize = visualize;
         println!("map: {:?}", map);
-        println!("complete?: {}", map.is_complete());
 
         let solution = right_solver::solve(&mut map);
         let solution_string = solution
