@@ -315,30 +315,31 @@ impl Map {
         }
         match action {
             Action::Start => {
-                let to_paint = self.bot.manipulators.iter().map(|x|self.bot.position.offset_by(&x)).collect::<Vec<_>>(); 
-                let _ = to_paint.iter().map(|&x|self.paint(x)).collect::<Vec<_>>();
+                self.paint_current_position();
                 return Result::Ok(());
             }
             Action::Right => {
                 self.bot.move_self(&Direction::East);
-                let to_paint = self.bot.manipulators.iter().map(|x|self.bot.position.offset_by(&x)).collect::<Vec<_>>(); 
-                let _ = to_paint.iter().map(|&x|self.paint(x)).collect::<Vec<_>>();
+                self.paint_current_position();
                 return Result::Ok(());
             }
             Action::Up => {
                 self.bot.move_self(&Direction::North);
-                let to_paint = self.bot.manipulators.iter().map(|x|self.bot.position.offset_by(&x)).collect::<Vec<_>>(); 
-                let _ = to_paint.iter().map(|&x|self.paint(x)).collect::<Vec<_>>();
+                self.paint_current_position();
                 return Result::Ok(());
             }
             Action::Down => {
                 self.bot.move_self(&Direction::South);
-                let to_paint = self.bot.manipulators.iter().map(|x|self.bot.position.offset_by(&x)).collect::<Vec<_>>(); 
-                let _ = to_paint.iter().map(|&x|self.paint(x)).collect::<Vec<_>>();
+                self.paint_current_position();
                 return Result::Ok(());
             }
             _ => panic!("I'm sorry, I can't do that Dave"),
         }
+    }
+
+    fn paint_current_position(&mut self) {
+        let squares_to_paint = self.bot.manipulators.iter().map(|x| self.bot.position.offset_by(&x)).filter_map(|x| x.ok()).collect::<Vec<_>>();
+        let _ = squares_to_paint.iter().map(|&x| self.paint(x)).collect::<Vec<_>>();
     }
 }
 
