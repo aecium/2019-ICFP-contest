@@ -242,8 +242,8 @@ impl Map {
         
         let north = squares.get(pos.y + 1).and_then(|row| row.get(pos.x));
         let east = squares.get(pos.y).and_then(|row| row.get(pos.x + 1));
-        let south = squares.get(pos.y - 1).and_then(|row| row.get(pos.x));
-        let west = squares.get(pos.y).and_then(|row| row.get(pos.x - 1));
+        let south = if pos.y > 0 { squares.get(pos.y - 1).and_then(|row| row.get(pos.x))} else { None };
+        let west = if pos.x > 0 { squares.get(pos.y).and_then(|row| row.get(pos.x - 1)) } else { None };
 
         return (north, east, south, west, my_square);
     }
