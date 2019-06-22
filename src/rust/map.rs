@@ -237,11 +237,11 @@ impl Map {
 
         //let mySquare = &self.squares.get(index: I)[pos.x]
         let my_square = match squares.get(pos.y) {
-            Some(x) => match x.get(pos.y) {
+            Some(x) => match x.get(pos.x) {
                 Some(square) => square,
-                _ => panic!("invalid at {:?} from map of size (x:{}, y:{})", pos, self.w, self.h),
+                _ => panic!("invalid at {:?} from map of size (x:{}, y:{}) on square {:?}", pos, self.w, self.h, self.squares[pos.y][pos.x]),
             },
-            _ => panic!("invalid at {:?} from map (x:{}, y:{})", pos, self.w, self.h),
+            _ => panic!("invalid at {:?} from map (x:{}, y:{}) on square {:?}", pos, self.w, self.h, self.squares[pos.y][pos.x]),
         };
 
         let north = squares.get(pos.y + 1).and_then(|row| row.get(pos.x));
