@@ -229,7 +229,7 @@ impl Map {
             },
             _ => panic!("invalid"),
         };
-
+        
         let north = squares.get(pos.y + 1).and_then(|row| row.get(pos.x));
         let east = squares.get(pos.y).and_then(|row| row.get(pos.x + 1));
         let south = squares.get(pos.y - 1).and_then(|row| row.get(pos.x));
@@ -254,11 +254,11 @@ impl Map {
     }
 
     pub fn is_valid_action(&self, action: &Action) -> bool {
-        let pos = self.bot.position;
+        let pos = &self.bot.position;
         let neighbors = self.find_neighbors(&pos);
         match action {
-            Action::Right => match neighbors.3 {
-                Some(&square) => match square {
+            Action::Right => match &neighbors.3 {
+                Some(square) => match square {
                     MapSquare::Empty { power_up: _ } | MapSquare::Wrapped { power_up: _ } => true,
                     _ => false,
                 },
@@ -268,16 +268,16 @@ impl Map {
         }
     }
 
-    pub fn perform(&self, action: &Action) -> Result<(),String> {
+    pub fn perform(&mut self, action: &Action) -> Result<(),String> {
         if !self.is_valid_action(action) {
             return Result::Err("Action is invalid".to_string());
         }
         match action {
             Action::Right => {
-                self.bot.move_self(Direction::East);
+                self.bot.move_self(&Direction::East);
                 return Result::Ok(());
             }
-            _ => panic!("I'm sorry, I can't do that Dave");
+            _ => panic!("I'm sorry, I can't do that Dave"),
         }
     }
 }

@@ -27,7 +27,7 @@ fn main() {
     println!("complete?: {}", map.is_complete());
 
     let solution = boko_solver::solve(&mut map);
-    println!("solution: {0}", solution.into_iter().collect());
+    println!("solution: {0}", solution.into_iter().map(|a| a.to_char()).collect::<String>());
     println!("complete?: {}", map.is_complete());
 
     println!("🌮 Free Tacos! 🌮");
