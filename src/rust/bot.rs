@@ -3,7 +3,7 @@ use rand::{
     Rng,
 };
 
-use crate::app_core::{Direction, Point, Offset};
+use crate::app_core::{Direction, Offset, Point};
 
 pub struct Bot {
     pub position: Point,
@@ -17,14 +17,20 @@ pub struct Bot {
 }
 
 impl Bot {
-    pub fn new(tPosition: Point, tDirection: Direction)->Self{
-        Bot{position: tPosition,
-        facing: tDirection,
-        extension: 0,
-        boost: 0,
-        drill: 0,
-        teleports: 0,
-        manipulators: vec![Offset{x:0,y:0},Offset{x:1,y:0},Offset{x:1,y:1},Offset{x:1,y:-1}], 
+    pub fn new(tPosition: Point, tDirection: Direction) -> Self {
+        Bot {
+            position: tPosition,
+            facing: tDirection,
+            extension: 0,
+            boost: 0,
+            drill: 0,
+            teleports: 0,
+            manipulators: vec![
+                Offset { x: 0, y: 0 },
+                Offset { x: 1, y: 0 },
+                Offset { x: 1, y: 1 },
+                Offset { x: 1, y: -1 },
+            ],
         }
     }
 
