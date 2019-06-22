@@ -232,6 +232,19 @@ impl Map {
         }
     }
 
+    pub fn is_painted(&self, point: Point) -> bool {
+        if point.y < self.squares.len() && point.x < self.squares[0].len() {
+            match self.squares[point.y][point.x] {
+                MapSquare::Wrapped { power_up: _ } => {
+                    return true;
+                }
+                _ => return false,
+            }
+        } else {
+            false
+        }
+    }
+
     pub fn find_neighbors(&self, pos: &Point) -> Neighbors {
         let squares = &self.squares;
 
@@ -239,9 +252,15 @@ impl Map {
         let my_square = match squares.get(pos.y) {
             Some(x) => match x.get(pos.x) {
                 Some(square) => square,
-                _ => panic!("invalid at {:?} from map of size (x:{}, y:{}) on square {:?}", pos, self.w, self.h, self.squares[pos.y][pos.x]),
+                _ => panic!(
+                    "invalid at {:?} from map of size (x:{}, y:{}) on square {:?}",
+                    pos, self.w, self.h, self.squares[pos.y][pos.x]
+                ),
             },
-            _ => panic!("invalid at {:?} from map (x:{}, y:{}) on square {:?}", pos, self.w, self.h, self.squares[pos.y][pos.x]),
+            _ => panic!(
+                "invalid at {:?} from map (x:{}, y:{}) on square {:?}",
+                pos, self.w, self.h, self.squares[pos.y][pos.x]
+            ),
         };
 
         let north = squares.get(pos.y + 1).and_then(|row| row.get(pos.x));
