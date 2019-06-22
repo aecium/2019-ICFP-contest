@@ -7,8 +7,14 @@ use crate::app_core::{Direction, Point};
 use crate::powerups::PowerUp;
 
 pub struct Bot {
-    pub powerups: Vec<PowerUp>,
-    pub position: Point,
+    pub Position: Point,
+    pub Facing: Direction,
+    pub Extension: usize,
+    pub Boost: usize,
+    pub Drill: usize,
+    //pub Mysterious_Point: usize,
+    pub Teleports: usize,
+    pub Manipulators: Vec<Point>,
 }
 
 impl Bot {
