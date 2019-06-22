@@ -10,7 +10,8 @@ args:
     - solver:
         short: s
         long: solver
-        help: Select the solver.  Default is boko_solver.
+        help: Select the solver
+        default_value: boko_solver
     - INPUT:
         help: Input file(s) to use
         required: true
