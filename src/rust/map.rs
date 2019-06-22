@@ -281,6 +281,15 @@ impl Map {
         }
     }
 
+    pub fn paint(&mut self, point: Point) {
+        if point.y < self.squares.len() && point.x < self.squares[0].len() {
+            match self.squares[point.y][point.x] {
+                MapSquare::Empty { power_up: _ } => self.squares[point.y][point.x] = MapSquare::Wrapped { power_up: None },
+                _ => {},
+            }
+        }
+    }
+
     pub fn perform(&mut self, action: &Action) -> Result<(),String> {
         if !self.is_valid_action(action) {
             return Result::Err("Action is invalid".to_string());
