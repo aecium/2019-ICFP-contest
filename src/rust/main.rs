@@ -9,17 +9,16 @@ extern crate clap;
 use clap::App;
 
 mod app_core;
-use app_core::Direction;
 
 mod powerups;
 
 mod map;
-use map::{Map, MapSquare};
+use map::{Map};
 
 mod bot;
 use bot::*;
 mod solvers;
-use solvers::boko_solver;
+use solvers::right_solver;
 
 mod test;
 
@@ -43,7 +42,7 @@ fn main() {
         println!("map: {:?}", map);
         println!("complete?: {}", map.is_complete());
 
-        let solution = boko_solver::solve(&mut map);
+        let solution = right_solver::solve(&mut map);
         let solution_string = solution
             .into_iter()
             .map(|a| a.to_char())
