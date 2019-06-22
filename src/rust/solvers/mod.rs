@@ -1,3 +1,6 @@
+pub mod turn_right_solver;
+pub use turn_right_solver::*;
+
 pub mod right_solver;
 pub use right_solver::*;
 
