@@ -18,7 +18,7 @@ use map::Map;
 mod bot;
 use bot::*;
 mod solvers;
-use solvers::boko_solver_retry;
+use solvers::*;
 
 mod test;
 
@@ -67,7 +67,14 @@ fn main() {
         if has_old && old_len>0 {
             max_moves = old_len;
         }
-        let solution = boko_solver_retry::solve(&mut map, max_moves);
+        let solution = match matches.value_of("solver").unwrap() {
+            "boko_solver_retry" => boko_solver_retry::solve(&mut map, max_moves),
+            "boko_solver" => boko_solver::solve(&mut map),
+            "right_solver" => right_solver::solve(&mut map),
+            "spiral_right_solver" => spiral_right_solver::solve(&mut map),
+           _ => panic!("Unknown solver."),
+        };
+
         let new_len = solution.len();
         let solution_string = solution
             .into_iter()
@@ -89,9 +96,6 @@ fn main() {
             println!("No improved solution found.");
         }
     }
-
-
-
 
     println!("🌮 Free Tacos! 🌮");
 }
