@@ -12,14 +12,16 @@ pub type Neighbors<'a> = (
     Option<&'a MapSquare>,
     &'a MapSquare,
 );
+
+#[derive(Clone)]
 pub struct Map {
     remaining: usize,
     contour: Vec<Point>,
     squares: Vec<Vec<MapSquare>>,
     bot: Bot,
     pub visualize: bool,
-    w: usize,
-    h: usize,
+    pub w: usize,
+    pub h: usize,
 }
 impl Map {
     pub fn from_map_string(map_string: &str) -> Self {

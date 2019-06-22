@@ -1,5 +1,6 @@
 use crate::app_core::{Direction, Offset, Point, Rotation};
 
+#[derive(Clone)]
 pub struct Bot {
     pub position: Point,
     pub facing: Direction,

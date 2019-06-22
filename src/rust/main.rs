@@ -18,7 +18,7 @@ use map::Map;
 mod bot;
 use bot::*;
 mod solvers;
-use solvers::spiral_right_solver;
+use solvers::boko_solver_retry;
 
 mod test;
 
@@ -31,26 +31,6 @@ fn main() {
 
     for filename in matches.values_of("INPUT").unwrap() {
         let contents = fs::read_to_string(filename).expect("Failed to read.");
-
-        println!("Processing file: {}", filename);
-        if visualize {
-            println!("{}", contents);
-        }
-
-        let mut map = Map::from_map_string(&contents);
-        map.visualize = visualize;
-        println!("map: {:?}", map);
-
-        let solution = spiral_right_solver::solve(&mut map);
-        let solution_string = solution
-            .into_iter()
-            .map(|a| a.to_char())
-            .collect::<String>();
-        println!("solution: {}", solution_string);
-        println!("solution length: {}", solution_string.len());
-        println!("complete?: {}", map.is_complete());
-
-        // Store the solutions
         let path = Path::new("solutions");
         if !path.exists() {
             fs::create_dir(path);
@@ -64,9 +44,54 @@ fn main() {
         solution_filename.push_str(".sol");
         println!("{:?}", solution_filename);
         let file_path = path.join(Path::new(&solution_filename));
-        let mut file = File::create(file_path).unwrap();
-        file.write_all(&solution_string.into_bytes()).unwrap();
+        let mut has_old = false;
+        let mut old_len = 0;
+        if file_path.exists() {
+            let file = File::open(&file_path).unwrap();
+            old_len = file.metadata().unwrap().len() as usize;
+            if old_len > 0 {
+                has_old = true;
+            }
+        }
+
+        println!("Processing file: {}", filename);
+        if visualize {
+            println!("{}", contents);
+        }
+
+        let mut map = Map::from_map_string(&contents);
+        map.visualize = visualize;
+        println!("map: {:?}", map);
+
+        let mut max_moves =  map.get_remaining() * 100;
+        if has_old && old_len>0 {
+            max_moves = old_len;
+        }
+        let solution = boko_solver_retry::solve(&mut map, max_moves);
+        let new_len = solution.len();
+        let solution_string = solution
+            .into_iter()
+            .map(|a| a.to_char())
+            .collect::<String>();
+        println!("solution: {}", solution_string);
+        println!("solution length: {}", new_len);
+        println!("map size: {}", map.w*map.h);
+
+        if new_len>0 {
+            if !has_old || solution_string.len() < old_len {
+                let mut file = File::create(file_path).unwrap();
+                println!("Better than previous best {} vs. {}", new_len, old_len);
+                file.write_all(&solution_string.into_bytes()).unwrap();
+            } else {
+                println!("Worse than previous best {} vs. {}", new_len, old_len);
+            }
+        } else {
+            println!("No improved solution found.");
+        }
     }
+
+
+
 
     println!("🌮 Free Tacos! 🌮");
 }
