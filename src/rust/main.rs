@@ -14,7 +14,7 @@ use map::{Map};
 mod bot;
 use bot::*;
 mod solvers;
-use solvers::right_solver;
+use solvers::boko_solver;
 
 mod test;
 
@@ -33,7 +33,7 @@ fn main() {
         println!("map: {:?}", map);
         println!("complete?: {}", map.is_complete());
 
-        let solution = right_solver::solve(&mut map);
+        let solution = boko_solver::solve(&mut map);
         let solution_string = solution
             .into_iter()
             .map(|a| a.to_char())
