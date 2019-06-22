@@ -5,6 +5,7 @@ use crate::app_core::Point;
 use crate::powerups::PowerUp;
 
 pub struct Map {
+    remaining: usize,
     contour: Vec<Point>,
     squares: Vec<Vec<MapSquare>>,
 }
@@ -83,6 +84,7 @@ impl Map {
         Map {
             contour: points,
             squares: map,
+            remaining: 1,
         }
     }
 
@@ -237,7 +239,18 @@ impl Map {
     }
 
     pub fn is_complete(&self) -> bool {
-        return false;
+        let mut remaining = 0;
+        for y in (0..self.squares.len()) {
+            let row = &self.squares[y];
+            for x in 0..row.len() {
+                match self.squares[y][x] {
+                    MapSquare::Empty { power_up: _ } => remaining+=1,
+                    MapSquare::Wrapped { power_up: _ } | MapSquare::Blocked | MapSquare::OOB | MapSquare::Boundry => {},
+                };
+            }
+        }
+        println!("remaining: {}", remaining);
+        return remaining == 0;
     }
 }
 
@@ -269,7 +282,7 @@ impl MapSquare {
     fn to_char(&self) -> char {
         match self {
             //MapSquare::Empty{  } => '.',
-            //MapSquare::Wrapped => 'O',
+            MapSquare::Wrapped { power_up: _ } => 'O',
             MapSquare::Blocked => '~',
             MapSquare::OOB => '.',
             MapSquare::Boundry => ',',
