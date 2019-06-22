@@ -16,7 +16,6 @@ pub fn solve(map: &mut Map) -> Vec<Action> {
         {
             my_action = rng.gen();
         }
-        println!("My Selected Action is {:?}", my_action);
         map.perform(&my_action);
         action_list.push(my_action);
     }
@@ -25,13 +24,13 @@ pub fn solve(map: &mut Map) -> Vec<Action> {
 
 impl Distribution<Action> for Standard {
     fn sample<R: Rng + ?Sized>(&self, rng: &mut R) -> Action {
-        match rng.gen_range(0, 4) {
+        match rng.gen_range(0, 6) {
             0 => Action::Up,
             1 => Action::Right,
             2 => Action::Down,
-            _ => Action::Left,
-            //4 => Action::RotClock,
-            //_ => Action::RotAnticlock,
+            3 => Action::Left,
+            4 => Action::RotClock,
+            _ => Action::RotAnticlock,
         }
     }
 }

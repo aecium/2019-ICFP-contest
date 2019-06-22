@@ -1,11 +1,17 @@
 use std::fmt;
 
-#[derive(Clone)]
+#[derive(Clone,Debug)]
 pub enum Direction {
     North,
     East,
     South,
     West,
+}
+
+#[derive(Debug)]
+pub enum Rotation {
+    Clockwise,
+    AntiClockwise,
 }
 
 #[derive(Clone, Copy)]
@@ -16,8 +22,8 @@ pub struct Point {
 
 impl Point {
     pub fn offset_by(&self, offset: &Offset) -> Result<Self, String> {
-        let mut x_result = self.x as i64 + offset.x;
-        let mut y_result = self.y as i64 + offset.y;
+        let x_result = self.x as i64 + offset.x;
+        let y_result = self.y as i64 + offset.y;
 
         //if either are less than 0 set the offset to the origin
         if x_result < 0 || y_result < 0 {

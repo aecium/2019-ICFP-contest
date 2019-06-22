@@ -1,7 +1,7 @@
 name: Free Tacos ICFP 2019
 version: "1.0"
 author: Andy Meier <andy.meier@gmail.com>, Ben Phipps <aecium@gmail.com>, Nathan Frasier <nanoshot.nf@gmail.com>
-about: Wraps storage caves in exchange for free tacos
+about: Wraps storage caves in exchange for free tacos! website - freetacos.xyz
 args:
     - visualize:
         short: v
