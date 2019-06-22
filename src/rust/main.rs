@@ -87,7 +87,7 @@ impl Map {
         }
         let mut todo: Vec<Point> = Vec::new();
         todo.push(bot_position);
-        while todo.len() > 0 {
+        /*while todo.len() > 0 {
             let point = todo.pop().unwrap();
             let x = point.x;
             let y = point.y;
@@ -109,7 +109,7 @@ impl Map {
             }
             //println!("{}, {}, {:?}", x, y, todo);
             //println!("{:?}", done);
-        }
+        }*/
 
         Map {
             contour: points,
@@ -156,17 +156,20 @@ impl Map {
                         if square==mt {
                             if up && x<max_x && map[y][x+1]==oob {
                                 map[y][x+1] = MapSquare::OOB2;
-                                if y>0 && map[y-1][x-1]!=mt {
-                                    map[y-1][x-1] = MapSquare::OOB2;
+                                if y>0 && map[y-1][x+1]!=mt {
+                                    map[y-1][x+1] = MapSquare::OOB2;
                                 }
-                                if y < max_y {
-                                    map[y+1][x-1] = MapSquare::OOB2;
+                                if y < max_y && map[y+1][x+1]!=mt {
+                                    map[y+1][x+1] = MapSquare::OOB2;
                                 }
                             }
                             if down && x>0 && map[y][x-1]==oob {
                                 map[y][x-1] = MapSquare::OOB2;
-                                if y>0 {
+                                if y>0 && map[y-1][x-1]!=mt {
                                     map[y-1][x-1] = MapSquare::OOB2;
+                                }
+                                if y < max_y && map[y+1][x-1]!=mt {
+                                    map[y+1][x-1] = MapSquare::OOB2;
                                 }
                             }
                             if right && y<max_y && map[y+1][x]==oob {
