@@ -4,7 +4,6 @@ use rand::{
 };
 
 use crate::app_core::{Direction, Point};
-use crate::powerups::PowerUp;
 
 pub struct Bot {
     pub Position: Point,

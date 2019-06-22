@@ -1,7 +1,7 @@
 use std::cmp;
 use std::fmt;
 
-use crate::app_core::{Point};
+use crate::app_core::Point;
 use crate::powerups::PowerUp;
 
 pub struct Map {
@@ -17,17 +17,18 @@ impl Map {
             .trim_matches('(')
             .trim_matches(')')
             .split("),(");
-        let bot_position: Vec<&str> = split_map.next()
+        let bot_position: Vec<&str> = split_map
+            .next()
             .expect("Ran out of parts.")
             .trim_matches('(')
             .trim_matches(')')
-            .split(",").collect();
+            .split(",")
+            .collect();
         let bot_position = Point {
-            x:bot_position[0].parse::<usize>().unwrap(),
-            y:bot_position[1].parse::<usize>().unwrap(),
+            x: bot_position[0].parse::<usize>().unwrap(),
+            y: bot_position[1].parse::<usize>().unwrap(),
         };
-        let obstacles = split_map.next().expect("Need more tacos.")
-            .split(";");
+        let obstacles = split_map.next().expect("Need more tacos.").split(";");
         let boosters = split_map.next();
 
         let mut points: Vec<Point> = Vec::new();
@@ -90,17 +91,17 @@ impl Map {
             let oob = MapSquare::OOB;
             map[y][x] = MapSquare::Empty { power_up: None };
             done[y][x] = true;
-            if x > 0 && !done[y][x-1] && (map[y][x-1]==mt || map[y][x-1]==oob) {
-                todo.push(Point { x: x-1, y: y });
+            if x > 0 && !done[y][x - 1] && (map[y][x - 1] == mt || map[y][x - 1] == oob) {
+                todo.push(Point { x: x - 1, y: y });
             }
-            if x < max_x && !done[y][x+1] && (map[y][x+1]==mt || map[y][x+1]==oob) {
-                todo.push(Point { x: x+1, y: y });
+            if x < max_x && !done[y][x + 1] && (map[y][x + 1] == mt || map[y][x + 1] == oob) {
+                todo.push(Point { x: x + 1, y: y });
             }
-            if y > 0 && !done[y-1][x] && (map[y-1][x]==mt || map[y-1][x]==oob) {
-                todo.push(Point { x: x, y: y-1 });
+            if y > 0 && !done[y - 1][x] && (map[y - 1][x] == mt || map[y - 1][x] == oob) {
+                todo.push(Point { x: x, y: y - 1 });
             }
-            if y < max_y && !done[y+1][x] && (map[y+1][x]==mt || map[y+1][x]==oob) {
-                todo.push(Point { x: x, y: y+1 });
+            if y < max_y && !done[y + 1][x] && (map[y + 1][x] == mt || map[y + 1][x] == oob) {
+                todo.push(Point { x: x, y: y + 1 });
             }
             //println!("{}, {}, {:?}", x, y, todo);
             //println!("{:?}", done);
@@ -118,8 +119,8 @@ impl Map {
         let mut ps = points.to_vec();
         let mt = MapSquare::Empty { power_up: None };
         let oob = MapSquare::OOB;
-        let h = map.len()-1;
-        let w = map[0].len()-1;
+        let h = map.len() - 1;
+        let w = map[0].len() - 1;
         ps.push(points[0].clone());
         for point in ps {
             if first {
@@ -150,41 +151,41 @@ impl Map {
                 for x in min_x..=max_x {
                     for y in min_y..=max_y {
                         map[y][x] = square.clone();
-                        if square==mt {
-                            if up && x<w && map[y][x+1]==oob {
-                                map[y][x+1] = MapSquare::OOB2;
-                                if y>0 && map[y-1][x+1]!=mt {
-                                    map[y-1][x+1] = MapSquare::OOB2;
+                        if square == mt {
+                            if up && x < w && map[y][x + 1] == oob {
+                                map[y][x + 1] = MapSquare::OOB2;
+                                if y > 0 && map[y - 1][x + 1] != mt {
+                                    map[y - 1][x + 1] = MapSquare::OOB2;
                                 }
-                                if y < h && map[y+1][x+1]!=mt {
-                                    map[y+1][x+1] = MapSquare::OOB2;
-                                }
-                            }
-                            if down && x>0 && map[y][x-1]==oob {
-                                map[y][x-1] = MapSquare::OOB2;
-                                if y>0 && map[y-1][x-1]!=mt {
-                                    map[y-1][x-1] = MapSquare::OOB2;
-                                }
-                                if y < h && map[y+1][x-1]!=mt {
-                                    map[y+1][x-1] = MapSquare::OOB2;
+                                if y < h && map[y + 1][x + 1] != mt {
+                                    map[y + 1][x + 1] = MapSquare::OOB2;
                                 }
                             }
-                            if left && y<h && map[y+1][x]==oob {
-                                map[y+1][x] = MapSquare::OOB2;
-                                if x>0 && map[y+1][x-1]!=mt {
-                                    map[y+1][x-1] = MapSquare::OOB2;
+                            if down && x > 0 && map[y][x - 1] == oob {
+                                map[y][x - 1] = MapSquare::OOB2;
+                                if y > 0 && map[y - 1][x - 1] != mt {
+                                    map[y - 1][x - 1] = MapSquare::OOB2;
                                 }
-                                if x < w && map[y+1][x+1]!=mt {
-                                    map[y+1][x+1] = MapSquare::OOB2;
+                                if y < h && map[y + 1][x - 1] != mt {
+                                    map[y + 1][x - 1] = MapSquare::OOB2;
                                 }
                             }
-                            if right && y>0 && map[y-1][x]==oob {
-                                map[y-1][x] = MapSquare::OOB2;
-                                if x>0 && map[y-1][x-1]!=mt {
-                                    map[y-1][x-1] = MapSquare::OOB2;
+                            if left && y < h && map[y + 1][x] == oob {
+                                map[y + 1][x] = MapSquare::OOB2;
+                                if x > 0 && map[y + 1][x - 1] != mt {
+                                    map[y + 1][x - 1] = MapSquare::OOB2;
                                 }
-                                if x < w && map[y-1][x+1]!=mt {
-                                    map[y-1][x+1] = MapSquare::OOB2;
+                                if x < w && map[y + 1][x + 1] != mt {
+                                    map[y + 1][x + 1] = MapSquare::OOB2;
+                                }
+                            }
+                            if right && y > 0 && map[y - 1][x] == oob {
+                                map[y - 1][x] = MapSquare::OOB2;
+                                if x > 0 && map[y - 1][x - 1] != mt {
+                                    map[y - 1][x - 1] = MapSquare::OOB2;
+                                }
+                                if x < w && map[y - 1][x + 1] != mt {
+                                    map[y - 1][x + 1] = MapSquare::OOB2;
                                 }
                             }
                         }
@@ -229,7 +230,6 @@ impl Map {
         return false;
     }
 }
-
 
 impl fmt::Debug for Map {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {

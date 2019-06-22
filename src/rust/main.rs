@@ -2,10 +2,9 @@ use std::env;
 use std::fs;
 
 mod app_core;
-use app_core::{Direction, Point};
+use app_core::Direction;
 
 mod powerups;
-use powerups::PowerUp;
 
 mod map;
 use map::{Map, MapSquare};
