@@ -72,6 +72,7 @@ fn main() {
             "boko_solver" => boko_solver::solve(&mut map),
             "right_solver" => right_solver::solve(&mut map),
             "spiral_right_solver" => spiral_right_solver::solve(&mut map),
+            "directed_solver" => directed_solver::solve(&mut map, max_moves),
            _ => panic!("Unknown solver."),
         };
 

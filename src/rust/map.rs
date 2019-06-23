@@ -430,8 +430,33 @@ impl Map {
         }
         self.remaining = self.remaining - painted_count;
     }
-}
+    pub fn find_reachable_neighbors(&self, pos: &Point)-> Vec<Point> {
+        let mut reachables = Vec::new();
+        let neighbors = self.find_neighbors(&pos);
+        let (north,east,south,west,_) = neighbors;
+        match north {
+            Some(MapSquare::Empty {power_up: _}) | Some(MapSquare::Wrapped {power_up: _}) => reachables.push(Point{x:pos.x,y:pos.y+1}),
+            _ => {},
+        }
+        match east {
+            Some(MapSquare::Empty {power_up: _}) | Some(MapSquare::Wrapped {power_up: _}) => reachables.push(Point{x:pos.x+1,y:pos.y}),
+            _ => {},
+        }
+        match south {
+            Some(MapSquare::Empty {power_up: _}) | Some(MapSquare::Wrapped {power_up: _}) => reachables.push(Point{x:pos.x,y:pos.y-1}),
+            _ => {},
+        }
+        match west {
+            Some(MapSquare::Empty {power_up: _}) | Some(MapSquare::Wrapped {power_up: _}) => reachables.push(Point{x:pos.x-1,y:pos.y}),
+            _ => {},
+        }
+        return reachables;
+    }
 
+    pub fn bot_position(&self) -> Point {
+        return self.bot.position;
+    }
+}
 impl fmt::Debug for Map {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         let mut map: Vec<String> = Vec::new();
