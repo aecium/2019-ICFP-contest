@@ -6,10 +6,33 @@ use pathfinding::prelude::bfs;
 
 use std::{thread, time};
 
-pub fn solve(map: &mut Map, _moves: usize) -> Vec<Action> {
+pub fn solve(map: &mut Map) -> Vec<Action> {
     map.perform(&Action::Start).unwrap();
     let mut action_list = Vec::new();
     while !map.is_complete() {
+        //first take the move that fills the most spaces eagerly
+        let mut moveOptions = Vec::new();
+        let mut max_value = 1;
+        while max_value != 0 {
+            let mut moves = &mut moveOptions;
+            for action in &[Action::Up,Action::Right,Action::Down,Action::Left,Action::RotClock,Action::RotAnticlock] {
+                moves.push( (action,roa(map, action)) );
+            }
+            let best = moves.into_iter().max_by_key(|x| x.1).unwrap();
+            max_value = best.1;
+            //println!("Doing Best: {:?}",best);
+            //thread::sleep(time::Duration::from_millis(500));
+            if max_value != 0 {
+                map.perform(best.0);
+            }
+            moves.clear();
+        }
+
+        //println!("Using fallback solver");
+        if map.is_complete() {
+            break;
+        }
+        //if these moves are all 0, do the bfs solve instead.
         let path = match bfs(&map.bot_position(),|p| map.find_reachable_neighbors(p),|p| !map.is_painted(*p)) {
             Some(x) => x,
             None => panic!("bfs couldn't find a path!\n action_list: {:?}\n bot_position: {:?}\n map: {:?}\n", action_list, &map.bot_position(), map),
@@ -46,4 +69,14 @@ fn convert_to_actions(points: &Vec<Point>) -> Vec<Action> {
         };
     }
     return action_list;
+}
+
+fn roa(map: &Map, action: &Action) -> usize {
+    //println!("Evaluating Action: {:?}", action);
+    let mut projmap = map.clone();
+    let before = projmap.get_remaining();
+    projmap.perform(action);
+    let after = projmap.get_remaining();
+    //println!("Value: {:?}", before - after);
+    return before - after;
 }
