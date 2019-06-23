@@ -16,5 +16,8 @@ pub use directed_solver::*;
 pub mod directed_solver_v2;
 pub use directed_solver_v2::*;
 
+pub mod dis_solver;
+pub use dis_solver::*;
+
 pub mod eager_solver;
 pub use eager_solver::*;
