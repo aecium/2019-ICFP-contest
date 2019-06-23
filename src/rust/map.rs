@@ -147,14 +147,12 @@ impl Map {
     }
 
     pub fn pop_undo(&mut self){
-        println!("Before: {:?}", self);
         let delta = self.undo.pop().expect("No more undo");
         self.bot = delta.bot;
         self.remaining = delta.remaining;
         for (point, old) in delta.squares {
             self.set(point, old);
         }
-        println!("After: {:?}", self);
     }
 
     fn get(&self, p: Point) -> Option<MapSquare> {
@@ -417,16 +415,16 @@ impl Map {
     }
 
     pub fn paint(&mut self, point: Point) -> bool {
-        if point.y < self.squares.len() && point.x < self.squares[0].len() {
-            match self.squares[point.y][point.x] {
-                MapSquare::Empty { power_up: _ } => {
-                    self.squares[point.y][point.x] = MapSquare::Wrapped { power_up: None };
-                    return true;
+        let square = self.get(point);
+        match square {
+            Some(MapSquare::Empty { power_up: s }) => {
+                if !self.undo.is_empty() && !self.undo[0].squares.contains_key(&point) {
+                    self.undo[0].squares.insert(point, square.unwrap());
                 }
-                _ => return false,
+                self.set(point, MapSquare::Wrapped { power_up: s });
+                true
             }
-        } else {
-            false
+            _ => false,
         }
     }
 

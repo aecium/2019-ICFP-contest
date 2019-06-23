@@ -1,4 +1,4 @@
-#[derive(Clone, PartialEq)]
+#[derive(Clone, Copy, PartialEq)]
 pub enum PowerUp {
     Extension,       // {code: 'B'},
     Boost,           // {code: 'F'},
