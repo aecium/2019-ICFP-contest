@@ -68,11 +68,11 @@ fn main() {
             max_moves = old_len;
         }
         let solution = match matches.value_of("solver").unwrap() {
-            "boko_solver_retry" => boko_solver_retry::solve(&mut map, max_moves),
-            "boko_solver" => boko_solver::solve(&mut map),
-            "right_solver" => right_solver::solve(&mut map),
-            "spiral_right_solver" => spiral_right_solver::solve(&mut map),
-            "directed_solver" => directed_solver::solve(&mut map, max_moves),
+            "boko_retry" => boko_solver_retry::solve(&mut map, max_moves),
+            "boko" => boko_solver::solve(&mut map),
+            "right" => right_solver::solve(&mut map),
+            "spiral_right" => spiral_right_solver::solve(&mut map),
+            "directed" => directed_solver::solve(&mut map, max_moves),
            _ => panic!("Unknown solver."),
         };
 

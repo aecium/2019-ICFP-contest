@@ -97,7 +97,7 @@ impl Map {
             MapSquare::Empty { power_up: None },
         );
         for point in obstacle_starts {
-            Map::fill_map(&mut map, point, MapSquare::Blocked, MapSquare::Blocked);
+            //Map::fill_map(&mut map, point, MapSquare::Blocked, MapSquare::Blocked);
         }
         let remaining_spaces = Self::count_unwrapped(&map);
         Map {
