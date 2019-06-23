@@ -74,6 +74,7 @@ fn main() {
             "spiral_right" => spiral_right_solver::solve(&mut map),
             "directed" => directed_solver::solve(&mut map, max_moves),
             "directed_v2" => directed_solver_v2::solve(&mut map, max_moves),
+            "dis" => dis_solver::solve(&mut map),
             "eager" => eager_solver::solve(&mut map),
             _ => panic!("Unknown solver."),
         };

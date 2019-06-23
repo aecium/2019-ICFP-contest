@@ -1,10 +1,11 @@
-#[derive(Clone, PartialEq)]
+#[derive(Clone, Copy, PartialEq)]
 pub enum PowerUp {
     Extension,       // {code: 'B'},
     Boost,           // {code: 'F'},
     Drill,           // {code: 'L'},
     MysteriousPoint, // {code: 'X'},
     Teleport,        // {code: 'R'},
+    Cloner,          // {code: 'C'},
 }
 impl PowerUp {
     pub fn to_char(&self) -> char {
@@ -14,6 +15,7 @@ impl PowerUp {
             PowerUp::Drill => 'L',
             PowerUp::MysteriousPoint => 'X',
             PowerUp::Teleport => 'R',
+            PowerUp::Cloner => 'C',
         }
     }
 }
@@ -30,6 +32,7 @@ impl ByCode for PowerUp {
             'L' => PowerUp::Drill,
             'X' => PowerUp::MysteriousPoint,
             'R' => PowerUp::Teleport,
+            'C' => PowerUp::Cloner,
             _ => panic!("Unknown powerup code '{}'", code),
         }
     }

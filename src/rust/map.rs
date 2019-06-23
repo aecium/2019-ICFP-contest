@@ -1,5 +1,6 @@
 use std::cmp;
 use std::fmt;
+use std::collections::HashMap;
 
 use crate::app_core::{Direction, Point, Rotation};
 use crate::bot::*;
@@ -14,14 +15,21 @@ pub type Neighbors<'a> = (
 );
 
 #[derive(Clone)]
+pub struct MapUndo {
+    squares: HashMap<Point, MapSquare>,
+    remaining: usize,
+    bot: Bot,
+}
+
+#[derive(Clone)]
 pub struct Map {
     remaining: usize,
-    contour: Vec<Point>,
     squares: Vec<Vec<MapSquare>>,
     bot: Bot,
     pub visualize: bool,
     pub w: usize,
     pub h: usize,
+    undo: Vec<MapUndo>,
 }
 impl Map {
     pub fn from_map_string(map_string: &str) -> Self {
@@ -104,35 +112,58 @@ impl Map {
         }
 
         for booster in boosters {
-            println!("{}", booster);
-            let power = PowerUp::by_code(booster.chars().next().unwrap());
-            let parts: Vec<&str> = booster[2..booster.len()-1].split(",").collect();
-            let x =  parts[0].parse::<usize>().unwrap();
-            let y =  parts[1].parse::<usize>().unwrap();
-            map[y][x] = MapSquare::Empty { power_up: Some(power) };
+            if booster.len() > 0 {
+                println!("Booster: {}", booster);
+                let power = PowerUp::by_code(booster.chars().next().unwrap());
+                let parts: Vec<&str> = booster[2..booster.len()-1].split(",").collect();
+                let x =  parts[0].parse::<usize>().unwrap();
+                let y =  parts[1].parse::<usize>().unwrap();
+                map[y][x] = MapSquare::Empty { power_up: Some(power) };
+            }
         }
 
         let remaining_spaces = Self::count_unwrapped(&map);
         Map {
             w: map[0].len(),
             h: map.len(),
-            contour: points,
             squares: map,
             remaining: remaining_spaces,
             bot: Bot::new(bot_position.clone(), Direction::East),
             visualize: false,
+            undo: Vec::new(),
+        }
+    }
+
+    pub fn clear_undo(&mut self){
+        self.undo.clear();
+    }
+
+    pub fn push_undo(&mut self){
+        self.undo.push(MapUndo{
+            remaining: self.remaining,
+            bot: self.bot.clone(),
+            squares: HashMap::new(),
+        });
+    }
+
+    pub fn pop_undo(&mut self){
+        let delta = self.undo.pop().expect("No more undo");
+        self.bot = delta.bot;
+        self.remaining = delta.remaining;
+        for (point, old) in delta.squares {
+            self.set(point, old);
         }
     }
 
     fn get(&self, p: Point) -> Option<MapSquare> {
-        if p.x > self.w || p.x < 0 || p.y > self.h || p.y < 0 {
+        if p.x > self.w || p.y > self.h {
             return None;
         }
         return Some(self.squares[p.y][p.x].clone());
     }
 
     fn set(&mut self, p: Point, square: MapSquare) -> bool {
-        if p.x > self.w || p.x < 0 || p.y > self.h || p.y < 0 {
+        if p.x > self.w || p.y > self.h {
             return false;
         }
         self.squares[p.y][p.x] = square;
@@ -384,16 +415,16 @@ impl Map {
     }
 
     pub fn paint(&mut self, point: Point) -> bool {
-        if point.y < self.squares.len() && point.x < self.squares[0].len() {
-            match self.squares[point.y][point.x] {
-                MapSquare::Empty { power_up: _ } => {
-                    self.squares[point.y][point.x] = MapSquare::Wrapped { power_up: None };
-                    return true;
+        let square = self.get(point);
+        match square {
+            Some(MapSquare::Empty { power_up: s }) => {
+                if !self.undo.is_empty() && !self.undo[0].squares.contains_key(&point) {
+                    self.undo[0].squares.insert(point, square.unwrap());
                 }
-                _ => return false,
+                self.set(point, MapSquare::Wrapped { power_up: s });
+                true
             }
-        } else {
-            false
+            _ => false,
         }
     }
 
