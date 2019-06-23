@@ -3,7 +3,7 @@ use std::fmt;
 
 use crate::app_core::{Direction, Point, Rotation};
 use crate::bot::*;
-use crate::powerups::PowerUp;
+use crate::powerups::{ByCode,PowerUp};
 
 pub type Neighbors<'a> = (
     Option<&'a MapSquare>,
@@ -44,7 +44,10 @@ impl Map {
             y: bot_position[1].parse::<usize>().unwrap(),
         };
         let obstacles = split_map.next().expect("Need more tacos.").split(";");
-        let boosters = split_map.next();
+        let boosters = split_map
+            .next()
+            .expect("No parts to boost")
+            .split(";");
 
         let mut points: Vec<Point> = Vec::new();
 
@@ -97,8 +100,18 @@ impl Map {
             MapSquare::Empty { power_up: None },
         );
         for point in obstacle_starts {
-            //Map::fill_map(&mut map, point, MapSquare::Blocked, MapSquare::Blocked);
+            Map::fill_map(&mut map, point, MapSquare::Blocked, MapSquare::Blocked);
         }
+
+        for booster in boosters {
+            println!("{}", booster);
+            let power = PowerUp::by_code(booster.chars().next().unwrap());
+            let parts: Vec<&str> = booster[2..booster.len()-1].split(",").collect();
+            let x =  parts[0].parse::<usize>().unwrap();
+            let y =  parts[1].parse::<usize>().unwrap();
+            map[y][x] = MapSquare::Empty { power_up: Some(power) };
+        }
+
         let remaining_spaces = Self::count_unwrapped(&map);
         Map {
             w: map[0].len(),
@@ -109,6 +122,21 @@ impl Map {
             bot: Bot::new(bot_position.clone(), Direction::East),
             visualize: false,
         }
+    }
+
+    fn get(&self, p: Point) -> Option<MapSquare> {
+        if p.x > self.w || p.x < 0 || p.y > self.h || p.y < 0 {
+            return None;
+        }
+        return Some(self.squares[p.y][p.x].clone());
+    }
+
+    fn set(&mut self, p: Point, square: MapSquare) -> bool {
+        if p.x > self.w || p.x < 0 || p.y > self.h || p.y < 0 {
+            return false;
+        }
+        self.squares[p.y][p.x] = square;
+        return true;
     }
 
     fn fill_map(
@@ -496,7 +524,7 @@ pub enum MapSquare {
 impl MapSquare {
     fn to_char(&self) -> char {
         match self {
-            //MapSquare::Empty{  } => '.',
+            MapSquare::Empty{ power_up: Some(p) } => p.to_char(),
             MapSquare::Wrapped { power_up: _ } => 'O',
             MapSquare::Blocked => '~',
             MapSquare::OOB => '.',

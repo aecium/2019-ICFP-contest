@@ -92,7 +92,7 @@ fn main() {
                 println!("Better than previous best {} vs. {}", new_len, old_len);
                 file.write_all(&solution_string.into_bytes()).unwrap();
             } else {
-                println!("Worse than previous best {} vs. {}", new_len, old_len);
+                println!("Not better than previous best {} vs. {}", new_len, old_len);
             }
         } else {
             println!("No improved solution found.");
