@@ -15,7 +15,7 @@ pub fn solve(map: &mut Map) -> Vec<Action> {
         let mut max_value = 1;
         while max_value != 0 {
             let moves = &mut move_options;
-            for action in &[Action::Up,Action::Right,Action::Down,Action::Left] {
+            for action in &[Action::Up,Action::Right,Action::Down,Action::Left,Action::RotClock] {
                 moves.push( (action,roa(map, action)) );
             }
             let best = moves.into_iter().max_by_key(|x| x.1).unwrap();

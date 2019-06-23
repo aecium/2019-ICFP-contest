@@ -5,7 +5,7 @@ pub enum PowerUp {
     Drill,           // {code: 'L'},
     MysteriousPoint, // {code: 'X'},
     Teleport,        // {code: 'R'},
-    Cloner,             // {code: 'C'},
+    Cloner,          // {code: 'C'},
 }
 impl PowerUp {
     pub fn to_char(&self) -> char {
