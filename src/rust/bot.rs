@@ -77,7 +77,7 @@ pub trait ToChar {
     fn to_char(&self) -> char;
 }
 
-#[derive(Debug,Clone)]
+#[derive(Debug,Clone,Copy,PartialEq)]
 pub enum Action {
     Start,
     Up,

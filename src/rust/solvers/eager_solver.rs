@@ -14,7 +14,7 @@ pub fn solve(map: &mut Map) -> Vec<Action> {
         let mut moveOptions = Vec::new();
         let mut max_value = 1;
         while max_value != 0 {
-            let mut moves = &mut moveOptions;
+            let moves = &mut moveOptions;
             for action in &[Action::Up,Action::Right,Action::Down,Action::Left] {
                 moves.push( (action,roa(map, action)) );
             }
