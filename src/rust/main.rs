@@ -73,7 +73,8 @@ fn main() {
             "right" => right_solver::solve(&mut map),
             "spiral_right" => spiral_right_solver::solve(&mut map),
             "directed" => directed_solver::solve(&mut map, max_moves),
-           _ => panic!("Unknown solver."),
+            "eager" => eager_solver::solve(&mut map),
+            _ => panic!("Unknown solver."),
         };
 
         let new_len = solution.len();
@@ -91,7 +92,7 @@ fn main() {
                 println!("Better than previous best {} vs. {}", new_len, old_len);
                 file.write_all(&solution_string.into_bytes()).unwrap();
             } else {
-                println!("Worse than previous best {} vs. {}", new_len, old_len);
+                println!("Not better than previous best {} vs. {}", new_len, old_len);
             }
         } else {
             println!("No improved solution found.");

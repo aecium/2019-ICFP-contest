@@ -1,8 +1,21 @@
 #[derive(Clone, PartialEq)]
 pub enum PowerUp {
-    Extension, //{code: 'B'},
-    Boost,     // {code: 'F'},
-    Drill,     // {code: 'L'},
+    Extension,       // {code: 'B'},
+    Boost,           // {code: 'F'},
+    Drill,           // {code: 'L'},
+    MysteriousPoint, // {code: 'X'},
+    Teleport,        // {code: 'R'},
+}
+impl PowerUp {
+    pub fn to_char(&self) -> char {
+        match self {
+            PowerUp::Extension => 'B',
+            PowerUp::Boost => 'F',
+            PowerUp::Drill => 'L',
+            PowerUp::MysteriousPoint => 'X',
+            PowerUp::Teleport => 'R',
+        }
+    }
 }
 
 pub trait ByCode {
@@ -15,7 +28,9 @@ impl ByCode for PowerUp {
             'B' => PowerUp::Extension,
             'F' => PowerUp::Boost,
             'L' => PowerUp::Drill,
-            _ => panic!("Unknown powerup code"),
+            'X' => PowerUp::MysteriousPoint,
+            'R' => PowerUp::Teleport,
+            _ => panic!("Unknown powerup code '{}'", code),
         }
     }
 }

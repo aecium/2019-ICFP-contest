@@ -7,6 +7,7 @@ use pathfinding::prelude::bfs;
 use std::{thread, time};
 
 pub fn solve(map: &mut Map, _moves: usize) -> Vec<Action> {
+    println!("Started solve!");
     map.perform(&Action::Start).unwrap();
     let mut action_list = Vec::new();
     while !map.is_complete() {
@@ -14,19 +15,11 @@ pub fn solve(map: &mut Map, _moves: usize) -> Vec<Action> {
             Some(x) => x,
             None => panic!("bfs couldn't find a path!\n action_list: {:?}\n bot_position: {:?}\n map: {:?}\n", action_list, &map.bot_position(), map),
         };
-        let target_point = path.last().unwrap();
-        //println!("Created path {:?}", path);
         let actions = convert_to_actions(&path);
-        //println!("Created actions list {:?}", actions);
         for a in actions {
-            //println!("Doing action {:?}", a);
             map.perform(&a);
             action_list.push(a);
-            if map.is_painted(*target_point){
-                break;
-            }
         }
-        //println!("Current Action List: {:?}", action_list);
     }
     return action_list;
 }

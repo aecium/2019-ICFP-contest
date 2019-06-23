@@ -12,3 +12,6 @@ pub use boko_solver_retry::*;
 
 pub mod directed_solver;
 pub use directed_solver::*;
+
+pub mod eager_solver;
+pub use eager_solver::*;
