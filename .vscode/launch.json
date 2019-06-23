@@ -6,6 +6,12 @@
     "configurations": [
         {
             "type": "lldb",
+            "request": "attach",
+            "name": "Attach",
+            "program": "${workspaceFolder}/target/debug/app"
+        },
+        {
+            "type": "lldb",
             "request": "launch",
             "name": "Debug executable 'app'",
             "cargo": {
@@ -19,7 +25,7 @@
                     "kind": "bin"
                 }
             },
-            "args": [],
+            "args": ["-s directed_v2 ../../problems/prob-004.desc"],
             "cwd": "${workspaceFolder}"
         },
         {

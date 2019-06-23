@@ -27,93 +27,75 @@ pub fn solve(map: &mut Map, _moves: usize) -> Vec<Action> {
             Some(x) => x,
             None => panic!("bfs couldn't find a path!\n action_list: {:?}\n bot_position: {:?}\n map: {:?}\n", action_list, &plan_map.bot_position(), map),
             };
-            println!("Created path {:?}", path);
-            println!("0action:{:?}", actions);
-            println!("0last_actions:{:?}", last_actions);
+            //println!("Created path {:?}", path);
+
             actions = convert_to_actions(&path);
-            println!("Created actions list {:?}", actions);
-            if actions.len() > 1 {
+            //println!("Created actions list {:?}", actions);
+            if actions.len() > 1 && d_count < 3 {
                 action_backlog.append(&mut actions);
                 last_actions.clear();
+                //println!("exit acctions.len() > 1");
                 break;
             };
-            
-            println!("0`action:{:?}", actions);
-            println!("0`last_actions:{:?}", last_actions);
 
             //let action_to_perform = actions.first()
             plan_map.perform(actions.first().unwrap());
             action_backlog.append(&mut actions.clone());
 
-            println!("1action:{:?}", actions);
-            println!("1last_actions:{:?}", last_actions);
             // actions is a single step action
-            if &actions == last_actions{
+            if &actions == last_actions {
                 d_count = d_count + 1;
-                println!("count:{:?}", d_count);
+            // println!("1action:{:?}", actions);
+            // println!("1last_actions:{:?}", last_actions);
+            // println!("repeat count:{:?}", d_count);
             } else {
-                *last_actions = actions.clone();
-                println!("2action:{:?}", actions);
-                println!("2last_actions:{:?}", last_actions);
+                //*last_actions = actions.clone();
+                //println!("`count:{:?}", d_count);
                 if d_count > 2 {
-                    action_backlog.insert(0, Action::RotAnticlock);
+                    println!("1action:{:?}", actions);
+                    println!("1last_actions:{:?}", last_actions);
+                    match actions[0] {
+                        Action::Down | Action::Up => match last_actions[0] {
+                            Action::Left | Action::Right => {
+                                action_backlog.insert(0, Action::RotAnticlock);
+                                println!("did rotate 1");
+                            }
+                            _ => println!("did not rotate 1"),
+                        },
+                        Action::Left | Action::Right => match last_actions[0] {
+                            Action::Down | Action::Up => {
+                                action_backlog.insert(0, Action::RotClock);
+                                println!("did rotate 2");
+                            }
+                            _ => println!("did not rotate 2"),
+                        },
+                        _ => println!("did nothing"),
+                    }
+
                     //map.perform(&Action::RotAnticlock);
                     //action_list.push(Action::RotAnticlock);
-                    println!("Doing action {:?}", Action::RotAnticlock);
-                } 
-                if d_count > 0{
+                    //println!("Doing action {:?}", Action::RotAnticlock);
+                }
+                *last_actions = actions.clone();
+                if d_count > 0 {
+                    //println!("exit d_count > 0");
                     d_count = 0;
                     break;
                 }
-                
             }
 
-            /*
-            println!("0action:{:?}", actions);
-            println!("0last_actions:{:?}", last_actions);
-            if actions == last_actions && !actions.is_empty(){
-                d_count = d_count + 1;
-                println!("count:{:?}", d_count);
-            } else {
-                last_actions = actions.clone();
-                //actions.clear();
-                println!("1action:{:?}", actions);
-                println!("1last_actions:{:?}", last_actions);
-
-                if d_count > 3 {
-                    map.perform(&Action::RotAnticlock);
-                    action_list.push(Action::RotAnticlock);
-                    println!("Doing action {:?}", Action::RotAnticlock);
-                }
-
-                break;
-            }
-            println!("2action:{:?}", actions);
-            println!("2last_actions:{:?}", last_actions);
-            let path = match bfs(&map.bot_position(),|p| map.find_reachable_neighbors(p),|p| !map.is_painted(*p)) {
-            Some(x) => x,
-            None => panic!("bfs couldn't find a path!\n action_list: {:?}\n bot_position: {:?}\n map: {:?}\n", action_list, &map.bot_position(), map),
-            };
-            println!("3action:{:?}", actions);
-            println!("3last_actions:{:?}", last_actions);
-            //println!("Created path {:?}", path);
-            actions = convert_to_actions(&path);
-            println!("Created actions list {:?}", actions);
-            if actions.len() > 1 {
-                break;
-            }
-            println!("4action:{:?}", actions);
-            println!("4last_actions:{:?}", last_actions);
-            */
-            println!("action_list: {:?}", action_list);
-            println!("action_backlog: {:?}", action_backlog);
+            //println!("action_list: {:?}", action_list);
+            //println!("action_backlog: {:?}", action_backlog);
         }
         for a in action_backlog {
             //println!("Doing action {:?}", a);
             map.perform(&a);
             action_list.push(a);
         }
-        println!("Action Backlog applied!\n New Action List: {:?}", action_list);
+        //println!(
+        //    "Action Backlog applied!\n New Action List: {:?}",
+        //    action_list
+        //);
         //println!("Current Action List: {:?}", action_list);
     }
     return action_list;
