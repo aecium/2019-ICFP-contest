@@ -8,6 +8,7 @@ edition = "2018"
 pathfinding = "1"
 rand = "0.5"
 clap = { features = ["yaml"] }
+itertools = "0.8"
 
 [[bin]]
 name = "app"

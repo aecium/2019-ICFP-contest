@@ -5,6 +5,9 @@ use std::io::prelude::*;
 use std::path::Path;
 
 #[macro_use]
+extern crate itertools;
+
+#[macro_use]
 extern crate clap;
 use clap::App;
 
