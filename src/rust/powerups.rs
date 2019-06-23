@@ -5,6 +5,7 @@ pub enum PowerUp {
     Drill,           // {code: 'L'},
     MysteriousPoint, // {code: 'X'},
     Teleport,        // {code: 'R'},
+    C,               // {code: 'C'},
 }
 impl PowerUp {
     pub fn to_char(&self) -> char {
@@ -14,6 +15,7 @@ impl PowerUp {
             PowerUp::Drill => 'L',
             PowerUp::MysteriousPoint => 'X',
             PowerUp::Teleport => 'R',
+            PowerUp::C => 'C',
         }
     }
 }
@@ -30,6 +32,7 @@ impl ByCode for PowerUp {
             'L' => PowerUp::Drill,
             'X' => PowerUp::MysteriousPoint,
             'R' => PowerUp::Teleport,
+            'C' => PowerUp::C,
             _ => panic!("Unknown powerup code '{}'", code),
         }
     }
