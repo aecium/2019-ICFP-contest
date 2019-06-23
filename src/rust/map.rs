@@ -134,8 +134,12 @@ impl Map {
             let x = point.x;
             let y = point.y;
             let oob = MapSquare::OOB;
-            map[y][x] = replace.clone();
             done[y][x] = true;
+            if map[y][x] == search || map[y][x] == oob {
+                map[y][x] = replace.clone();
+            } else {
+                continue;
+            }
             if x > 0 && !done[y][x - 1] && (map[y][x - 1] == search || map[y][x - 1] == oob) {
                 todo.push(Point { x: x - 1, y: y });
             }
