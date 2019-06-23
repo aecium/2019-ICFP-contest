@@ -13,7 +13,10 @@ pub fn solve(map: &mut Map, _moves: usize) -> Vec<Action> {
     while !map.is_complete() {
         //thread::sleep(time::Duration::from_secs(1));
         //println!("still not complete");
-        let path = bfs(&map.bot_position(),|p| map.find_reachable_neighbors(p),|p| !map.is_painted(*p)).unwrap();
+        let path = match bfs(&map.bot_position(),|p| map.find_reachable_neighbors(p),|p| !map.is_painted(*p)) {
+            Some(x) => x,
+            None => panic!("bfs couldn't find a path!\n action_list: {:?}\n bot_position: {:?}\n map: {:?}\n", action_list, &map.bot_position(), map),
+        };
         //println!("Created path {:?}", path);
         let actions = convert_to_actions(&path);
         //println!("Created actions list {:?}", actions);
