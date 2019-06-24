@@ -11,7 +11,7 @@ args:
         short: s
         long: solver
         help: Select the solver
-        default_value: directed
+        default_value: eager
     - INPUT:
         help: Input file(s) to use
         required: true

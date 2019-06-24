@@ -28,20 +28,9 @@ fn combo(moves: usize) -> Vec<Vec<Action>> {
 pub fn solve(map: &mut Map) -> Vec<Action> {
     map.perform(&Action::Start).unwrap();
     let mut action_list: Vec<Action> = Vec::new();
-    //let actions = &[Action::Up,Action::Right,Action::Down,Action::Left,Action::RotClock,Action::RotAnticlock];
-    //let actions = &[Action::Up,Action::Right,Action::Down,Action::Left];
-    //let actions = &[Action::Up];
     let combinations: Vec<Vec<Action>> = combo(3);
 
-    //for combination in &combinations {
-    //    println!("{:?}", combination);
-    //    println!("{:?}", combination.len());
-    //}
-
     while !map.is_complete() {
-        //println!("Before: {:?}", map);
-
-        //first take the move that fills the most spaces eagerly
         let mut max_score = 1;
         while max_score != 0 {
 
@@ -55,19 +44,14 @@ pub fn solve(map: &mut Map) -> Vec<Action> {
                 }
             }
 
-            //println!("{:?}\n Max: {}", map, max_value);
             if max_score != 0 {
                 for action in best {
                     if map.is_valid_action(&action) {
-                        //println!("{:?}", action);
                         map.perform(&action);
                         action_list.push(action);
                     }
                 }
             }
-            //println!("After: {:?}", map);
-            //println!("Max score: {}", max_score);
-            //break;
         }
 
         if map.is_complete() {
@@ -123,13 +107,7 @@ fn roa(map: &mut Map, actions: &Vec<Action>) -> usize {
     }
     let after = map.get_remaining();
     map.pop_undo();
-    let mut score = before - after;
+    let score = before - after;
     let moves = actions.len();
     return score / moves;
-    if score > moves {
-        score -= moves;
-    } else {
-        score = 1;
-    }
-    return score;
 }
